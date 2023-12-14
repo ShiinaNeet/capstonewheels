@@ -6,6 +6,8 @@ use App\Models\Enrollment;
 use App\Mail\PendingEnrollmentsNotification;
 use App\Models\User;
 use App\Models\Service;
+use App\Models\Payment;
+use App\Models\PaymentItem;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
@@ -54,6 +56,11 @@ class GetPendingEnrollments extends Command
 
                     // Update enrollment status to 0
                     $enrollment->update(['status' => 0]);
+                    $pending = Payment::leftJoin('payment_items', 'payments.id', '=', 'payment_items.payment_id')
+                        ->leftJoin('enrollments', 'payment_items.enrollment_id', '=', 'enrollments.id')
+                        ->where('payments.status', 0)
+                        ->first();
+                    $pending->update(['status'=> 2]);
                     $this->info('Enrollment status updated to 0 for ID: ' . $enrollment->id);
                 } catch (\Exception $e) {
                     $this->error('Error sending email to: ' . $studentEmail . ' - ' . $e->getMessage());

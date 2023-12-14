@@ -5,19 +5,11 @@
     style="position: sticky; top:0px; padding: 0.5rem 1.2rem; box-shadow: 0 3px var(--va-background-primary); height: 62px;"
     >
         <template #left>
-<<<<<<< Updated upstream
-            <va-navbar-item
-            class="logo self-center"
-            @click="$root.redirectToPage('/')"
-            >
-                WHEELS
-=======
             <va-navbar-item 
             class="logo flex items-center"
             @click="$root.redirectToPage('/')"
             >
                 <span class="ml-2">WHEELS</span>
->>>>>>> Stashed changes
             </va-navbar-item>
         </template>
         <template #right>
@@ -162,7 +154,6 @@
                         <div
                         class="hover:text-blue-500 max-w-xs p-0.5 select-none text-neutral-500 text-right"
                         @click="readAllNotifications" 
-                        hidden
                         >
                             <p>
                                 <va-icon

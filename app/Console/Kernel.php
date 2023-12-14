@@ -4,7 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
+use App\Console\Commands\CheckServiceSchedules;
+use App\Console\Commands\GetPendingEnrollments;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -12,8 +13,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command(GetPendingEnrollments::class)->dailyAt('01:00');
-        $schedule->command(CheckServiceSchedules::class)->dailyAt('01:00');
+        $schedule->command(GetPendingEnrollments::class)->everyMinute();
+        $schedule->command(CheckServiceSchedules::class)->everyMinute();
     }
 
     /**
