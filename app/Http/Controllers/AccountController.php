@@ -153,7 +153,13 @@ class AccountController extends Controller
         $this->validate($request, $validations, [
             'gender.numeric' => "The gender field is required",
         ]);
-
+        $birthdate = \Carbon\Carbon::parse($request->birthdate);
+        $today = \Carbon\Carbon::now();
+        $age = $birthdate->diffInYears($today);
+        if($age <= 18){  
+            $rs = SharedFunctions::prompt_msg("You must be atleast 18 years old!");
+            goto end;
+        } 
         $restriction_codes = null;
         $user_details = UserDetail::where('user_id', Auth::id())->first();
         if (!$user_details) $user_details = new UserDetail();
@@ -185,7 +191,7 @@ class AccountController extends Controller
                 AuditTrail::CATEGORY_ACCOUNT, AuditTrail::ACTION_UPDATE, "Account details updated"
             );
         }
-        return response()->json($rs);
+        end: return response()->json($rs);
     }
 
     public function update_account_password(Request $request)

@@ -867,6 +867,10 @@ export default {
                     location.reload();
                     // this.account.saved = false;
                 }
+                else{
+                    this.$root.prompt(response.data.text);
+                    this.account.saved = false
+                }  
             }).catch(error => {
                 // this.$root.prompt(error.response.data.message);
                 let resDataError = Object.keys(error.response.data.errors);
