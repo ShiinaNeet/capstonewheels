@@ -219,7 +219,7 @@
                 <div
                 id="settings-wrapper"
                 >
-                    <template v-if="activeSetting === 'Account'">
+                    <template v-if="activeSetting === 'User Management'">
                         <accounts :session-id="accountId" />
                     </template>
                     <template v-if="activeSetting === 'News'">
@@ -316,7 +316,7 @@ export default {
             media_mngt: ['News', 'FAQ', 'Company Details'],
             enrol_mngt: ['Schedule', 'Service', 'Requirement', 'Room', 'Vehicle'],
             reprt_mngt: ['LTO Enrolled Students', 'Failed Enrollments', 'Income'],
-            bckup_mngt: ['Database Import', 'Database Export', 'Audit Log', 'Account'],
+            bckup_mngt: ['User Management','Database Import', 'Database Export', 'Audit Log', ],
             activeSetting: 'Dashboard',
             menu_open: false,
         };
