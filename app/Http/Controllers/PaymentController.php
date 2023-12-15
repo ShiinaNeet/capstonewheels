@@ -11,6 +11,8 @@ use App\Models\Schedule\ServiceSchedule;
 use App\Models\User;
 use App\Notifications\Notify;
 use App\Notifications\PaymongoSuccessNotification;
+use App\Notifications\NewEnrollee;
+use App\Notifications\SuccessPaymentToAdminOnly;
 // use Ixudra\Curl\Facades\Curl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -103,8 +105,21 @@ class PaymentController extends Controller
                 ->where('payment_items.payment_id', $request->payment_id)
                 ->update(['enrollments.status' => Enrollment::STATUS_ACTIVE]);
 
+            $enrolledService = PaymentItem::leftJoin('enrollments', 'payment_items.enrollment_id', '=', 'enrollments.id')
+                ->leftJoin('services', 'enrollments.service_id', '=', 'services.id')          
+                ->Select('services.name')
+                ->where('payment_items.payment_id', $request->payment_id)
+                ->first();
+           
+          
+
             //Notification
             $this->cash_success_notify($payment->reference_no,$payment->student_id);
+
+            //notifcation for admin side. For enrollment finished
+            $this->enrollment_success_for_admin_notify($payment->student_id,$enrolledService);
+            $this->student_payment_success_for_admin_notify($payment->reference_no);
+
 
             SharedFunctions::create_audit_log(
                 AuditTrail::CATEGORY_PAYMENT, AuditTrail::ACTION_UPDATE, "Payment for " . $payment->reference_no . ""
@@ -123,5 +138,23 @@ class PaymentController extends Controller
     {
         $users = User::where('id', $student_id)->get();
         Notify::send($users, new PaymongoSuccessNotification($ref));
+    }
+    private function enrollment_success_for_admin_notify($student_id,$enrolledService)
+    {
+        // User type number 3 = admin
+        $users = User::where('user_type', 3 )->get();
+        $student = User::leftJoin('user_details', 'users.id', '=', 'user_details.user_id')
+            ->select(DB::raw("CONCAT(user_details.lastname, ', ', user_details.firstname) AS student_name"))
+            ->addSelect('user_details.lastname', 'user_details.firstname', 'user_details.middlename')
+            ->where('users.id', $student_id)
+            ->first();
+        $fullname = $student->firstname . ' ' . $student->lastname;
+        Notify::send($users, new NewEnrollee($fullname,$enrolledService));
+    }
+    private function student_payment_success_for_admin_notify($references)
+    {
+        // User type number 3 = admin
+        $users = User::where('user_type', 3 )->get();
+        Notify::send($users, new SuccessPaymentToAdminOnly($references));
     }
 }
