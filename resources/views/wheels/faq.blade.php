@@ -9,5 +9,5 @@
 @endsection
 
 @section('content')
-    <help />
+    <faq />
 @endsection

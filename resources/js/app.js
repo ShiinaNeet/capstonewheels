@@ -8,7 +8,7 @@ import accountModule from './pages/account.vue';
 import contactusModule from './pages/contactus.vue';
 import dashboardModule from './pages/dashboard.vue';
 import enrolledStudentsModule from './pages/enrolledstudents.vue';
-import helpModule from './pages/help.vue';
+import faqModule from './pages/faq.vue';
 import loginModule from './pages/login.vue';
 import newsModule from './pages/newsevent.vue';
 import studentEnrollmentModule from './pages/student/enrollment.vue';
@@ -49,7 +49,7 @@ const app = createApp({
         'newsevent': newsModule,
         'student-enrollment': studentEnrollmentModule,
         'student-enrollment-form': studentEnrollmentSummaryModule,
-        'help': helpModule,
+        'faq': faqModule,
         'aboutus': aboutusModule,
         'contactus': contactusModule,
         'terms': termsconditionModule

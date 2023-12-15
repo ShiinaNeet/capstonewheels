@@ -68,7 +68,7 @@ Route::group(['middleware' => 'check_auth'], function () {
     Route::get('/get_inquiries', [InquiryController::class, 'get']);
     Route::get('/instructors', [AccountController::class, 'get_instructors']);
     Route::get('/notifications/read', [NotificationController::class, 'mark_as_read']);
-    Route::get('/help', [PageController::class, 'help']);
+    Route::get('/faq', [PageController::class, 'faq']);
     Route::get('/pay', [PaymentController::class, 'pay']);
     Route::get('/requirements', [RequirementController::class, 'get']);
     Route::get('/rooms', [RoomController::class, 'get']);

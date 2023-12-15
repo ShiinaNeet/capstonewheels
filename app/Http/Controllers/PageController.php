@@ -62,10 +62,10 @@ class PageController extends Controller
         return view('wheels.student_enrollment', $data);
     }
 
-    public function help()
+    public function faq()
     {
         $data['css'] = ['global'];
-        return view('wheels.help', $data);
+        return view('wheels.faq', $data);
     }
     public function aboutus()
     {
