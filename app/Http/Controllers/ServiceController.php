@@ -366,8 +366,46 @@ class ServiceController extends Controller
             ->groupBy('enrollments.service_id')
             ->groupBy('enrollments.batch')
             ->get();
+
+        $pending = Enrollment::leftJoin('services', 'enrollments.service_id', '=', 'services.id')
+            ->leftJoin('service_schedules', function ($join) {
+                $join->on('services.id', '=', 'service_schedules.service_id')
+                    ->on('enrollments.batch', '=', 'service_schedules.batch');
+            })->leftJoin('users', 'service_schedules.instructor_id', '=', 'users.id')
+            ->leftJoin('user_details as instruc', 'service_schedules.instructor_id', '=', 'instruc.user_id')
+            ->select('services.name')
+            ->addSelect(DB::raw("COALESCE(CONCAT(instruc.lastname, ', ', instruc.firstname), users.email) AS instructor"))
+            ->addSelect(DB::raw("CONCAT(instruc.lastname, ', ', instruc.firstname) AS instructor"))
+            ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS date_start"))
+            ->addSelect(DB::raw("MIN(service_schedules.time_start) AS time_start"))
+            ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS date_end"))
+            ->addSelect(DB::raw("MAX(service_schedules.time_end) AS time_end"))
+            ->where('enrollments.student_id', Auth::id())
+            ->where('enrollments.status', Enrollment::STATUS_PENDING)
+            ->groupBy('enrollments.service_id')
+            ->groupBy('enrollments.batch')
+            ->get();
+        
+        $cancelled = Enrollment::leftJoin('services', 'enrollments.service_id', '=', 'services.id')
+            ->leftJoin('service_schedules', function ($join) {
+                $join->on('services.id', '=', 'service_schedules.service_id')
+                    ->on('enrollments.batch', '=', 'service_schedules.batch');
+            })->leftJoin('users', 'service_schedules.instructor_id', '=', 'users.id')
+            ->leftJoin('user_details as instruc', 'service_schedules.instructor_id', '=', 'instruc.user_id')
+            ->select('services.name')
+            ->addSelect(DB::raw("COALESCE(CONCAT(instruc.lastname, ', ', instruc.firstname), users.email) AS instructor"))
+            ->addSelect(DB::raw("CONCAT(instruc.lastname, ', ', instruc.firstname) AS instructor"))
+            ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS date_start"))
+            ->addSelect(DB::raw("MIN(service_schedules.time_start) AS time_start"))
+            ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS date_end"))
+            ->addSelect(DB::raw("MAX(service_schedules.time_end) AS time_end"))
+            ->where('enrollments.student_id', Auth::id())
+            ->where('enrollments.status', Enrollment::STATUS_CANCELLED)
+            ->groupBy('enrollments.service_id')
+            ->groupBy('enrollments.batch')
+            ->get();
         $rs = SharedFunctions::success_msg('Success');
-        $rs['result'] = ['active' => $active, 'completed' => $completed];
+        $rs['result'] = ['active' => $active, 'completed' => $completed, 'pending' => $pending, 'cancelled' => $cancelled];
         return response()->json($rs);
     }
 

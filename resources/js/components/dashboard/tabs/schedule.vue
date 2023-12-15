@@ -198,7 +198,80 @@
                 </tr>
             </template>
         </va-data-table>
+        <va-data-table
+        id="data-table"
+        v-if="stabs[stab].title === 'Pending' && this.$root.auth.userType === 0"
+        :items="sched.pending.items"
+        :columns="sched.pending.table.columns"
+        :per-page="sched.pending.table.perPage"
+        :current-page="sched.pending.table.currPage"
+        no-data-html="No student(s) to show"
+        :filter="filter"
+        @filtered="filtered = $event.items"
+        animated
+        >
+            <template #cell(date_start)="{ rowData }">
+                {{ formatDate(rowData.date_start + ' ' + rowData.time_start, 'MMM. Do YYYY hh:mma', 'Invalid Date') }}
+            </template>
+            <template #cell(date_end)="{ rowData }">
+                {{ formatDate(rowData.date_end + ' ' + rowData.time_end, 'MMM. Do YYYY hh:mma', 'Invalid Date') }}
+            </template>
 
+            <template #bodyAppend>
+                <tr v-if="$root.tblPagination(sched.active.items)">
+                    <td
+                    id="pagination"
+                    :colspan="sched.active.table.columns.length"
+                    >
+                        <div class="flex pt-[10px] select-none">
+                            <va-pagination
+                            class="justify-center"
+                            v-model="sched.active.table.currPage"
+                            :pages="filter == '' ? $root.tblPagination(sched.active.items) : (pages, sched.active.table.currPage = 1)"
+                            input
+                            />
+                        </div>
+                    </td>
+                </tr>
+            </template>
+        </va-data-table>
+        <va-data-table
+        id="data-table"
+        v-if="stabs[stab].title === 'Cancelled ' && this.$root.auth.userType === 0"
+        :items="sched.student_cancelled.items"
+        :columns="sched.student_cancelled.table.columns"
+        :per-page="sched.student_cancelled.table.perPage"
+        :current-page="sched.student_cancelled.table.currPage"
+        no-data-html="No student(s) to show"
+        :filter="filter"
+        @filtered="filtered = $event.items"
+        animated
+        >
+            <template #cell(date_start)="{ rowData }">
+                {{ formatDate(rowData.date_start + ' ' + rowData.time_start, 'MMM. Do YYYY hh:mma', 'Invalid Date') }}
+            </template>
+            <template #cell(date_end)="{ rowData }">
+                {{ formatDate(rowData.date_end + ' ' + rowData.time_end, 'MMM. Do YYYY hh:mma', 'Invalid Date') }}
+            </template>
+
+            <template #bodyAppend>
+                <tr v-if="$root.tblPagination(sched.active.items)">
+                    <td
+                    id="pagination"
+                    :colspan="sched.active.table.columns.length"
+                    >
+                        <div class="flex pt-[10px] select-none">
+                            <va-pagination
+                            class="justify-center"
+                            v-model="sched.active.table.currPage"
+                            :pages="filter == '' ? $root.tblPagination(sched.active.items) : (pages, sched.active.table.currPage = 1)"
+                            input
+                            />
+                        </div>
+                    </td>
+                </tr>
+            </template>
+        </va-data-table>
         <va-data-table
         id="data-table"
         v-if="stabs[stab].title === 'Completed'"
@@ -794,6 +867,32 @@ export default {
                     },
                     items: [],
                 },
+                pending: {
+                    table: {
+                        columns: [
+                            { key: "name", label: "Service", sortable: true },
+                            { key: "instructor", label: "Instructor", sortable: true },
+                            { key: "date_start", label: "Date Start", sortable: false },
+                            { key: "date_end", label: "Date End", sortable: false },
+                        ],
+                        perPage: this.$root.config.tblPerPage,
+                        currPage: this.$root.config.tblCurrPage,
+                    },
+                    items: [],
+                },
+                student_cancelled: {
+                    table: {
+                        columns: [
+                            { key: "name", label: "Service", sortable: true },
+                            { key: "instructor", label: "Instructor", sortable: true },
+                            { key: "date_start", label: "Date Start", sortable: false },
+                            { key: "date_end", label: "Date End", sortable: false },
+                        ],
+                        perPage: this.$root.config.tblPerPage,
+                        currPage: this.$root.config.tblCurrPage,
+                    },
+                    items: [],
+                },
                 completed: {
                     table: {
                         columns: [
@@ -856,13 +955,15 @@ export default {
                 { title: 'Reschedule', icon: 'timelapse' },
                 { title: 'Cancelled', icon: 'cancel_schedule_send' },
                 { title: 'Archive', icon: 'recent_actors' },
+                { title: 'Pending', icon: 'pending' },
+                { title: 'Cancelled ', icon: 'cancel_schedule_send' },
             ],
             stab: 0,
         }
     },
     beforeMount () {
         this.stabs = this.stabs.filter(item => {
-            return this.$root.auth.userType !== 0 ? (item.title !== 'Completed') : item;
+            return this.$root.auth.userType !== 0 ? (item.title !== 'Completed' && item.title !== 'Pending' && item.title !== 'Cancelled ') : item;
         });
 
         this.stabs = this.stabs.filter(item => {
@@ -1090,6 +1191,8 @@ export default {
                 if (response.data.status == 1) {
                     this.sched.active.items = response.data.result.active;
                     this.sched.completed.items = response.data.result.completed;
+                    this.sched.pending.items = response.data.result.pending;
+                    this.sched.student_cancelled.items = response.data.result.cancelled;
                 } else this.$root.prompt(response.data.text);
             }).catch(error => {
                 this.$root.prompt(error.response.data.message);
