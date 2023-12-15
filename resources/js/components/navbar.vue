@@ -140,7 +140,7 @@
                         <div class="hover:bg-blue-600 px-2.5 py-2 rounded" title="Notifications">
                             <va-badge
                             overlap
-                            :dot="notifications.length > 0 ? true : false"
+                            :dot="notifications.filter(notification => notification.read_at === null).length > 0"
                             color="#EF4444"
                             style="--va-badge-text-wrapper-border-radius: 40px;"
                             >
@@ -180,16 +180,24 @@
                         </div>
                         <template v-for="(row, i) in notifications" :key="i">
                             <va-divider />
-                            <div class="max-w-xs p-0.5 text-neutral-500">
-                                <p>
-                                    <va-icon
-                                    class="mr-1 mb-1"
-                                    :name="row.icon"
-                                    size="small"
-                                    />
-                                    {{ row.title }}<br/>
-                                    <span class="text-xs">{{ row.description }}</span>
-                                </p>
+                            <div 
+                                class="max-w-xs p-0.5 text-neutral-500 flex"
+                                :style="{ backgroundColor: row.read_at == null ? '#D0E1D4' : '', 'font-weight': row.read_at == null ? 'bold' : 'normal' }"
+                                @click="readSingleNotifications(row.id)"
+                            >
+                                <div>
+                                    <p>
+                                        <va-icon
+                                        class="mr-1 mb-1"
+                                        :name="row.icon"
+                                        size="small"
+                                        
+                                        />
+                                        {{ row.title }}<br/>
+                                        <span class="text-xs">{{ row.description }}</span>
+                                        <br/>
+                                    </p>
+                                </div>   
                             </div>
                         </template>
                         <template v-if="notifications.length == 0">
@@ -513,6 +521,7 @@
                     :sender-email="message.sender_email"
                     :senderSubject="message.subject"
                     :senderContent="message.content"
+                    :senderDate="message.created_at"
                     @close-modal="handleReplyModalClose()"
                     @message-sent="handleReplyModalClose()"
                     @message-cancelled="handleReplyModalClose()"
@@ -608,6 +617,9 @@ export default {
             isDeleteLoading: false,
             isReplyDeleteHidden: false,
             notifications: [],
+            notification: {
+                id: null
+            },
             messages: [],
             message: [],
             activeMessageModal: '',
@@ -758,6 +770,23 @@ export default {
         },
         closeComposeModal() {
             this.isComposeModalOpen = false;
+        },
+        readSingleNotifications(id) {
+            this.notification.id = id;
+            axios({
+                method: 'POST',
+                type: 'JSON',
+                url: '/notifications/single_read',
+                data: { id: this.notification.id },
+            }).then(response => {
+                if (response.data.status == 1) {
+                    this.getNotifications();
+                } else this.$root.prompt(response.data.text);
+                
+            }).catch(error => {
+                this.$root.prompt(error.response.data.message);
+              
+            });
         },
         formatDate
     }

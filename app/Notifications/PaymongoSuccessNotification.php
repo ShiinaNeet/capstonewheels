@@ -25,7 +25,7 @@ class PaymongoSuccessNotification extends BaseNotification
 
     public function getTitle(): string
     {
-        return 'Payment Success';
+        return 'Payment Paid Successfully';
     }
 
     public function getDescription(): string

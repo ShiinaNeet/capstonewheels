@@ -30,4 +30,13 @@ class NotificationController extends Controller
         $rs = SharedFunctions::success_msg("");
         return response()->json($rs);
     }
+    public function mark_single_notif_as_read(Request $request)
+    {
+        DB::table('notifications')->where('user_id', Auth::id())
+            ->whereNull('read_at')->orderBy('created_at')
+            ->where('id',$request->id)
+            ->update(['read_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        $rs = SharedFunctions::success_msg("");
+        return response()->json($rs);
+    }
 }
