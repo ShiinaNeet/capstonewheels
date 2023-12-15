@@ -18,6 +18,7 @@
                             <va-card-title>{{ senderEmail }}</va-card-title>
                             <va-card-content>
                                <p class="font-bold"> Subject: {{  message.subject}}</p>
+                               <p class="font-bold"> Date: {{ formatMessageDate(senderDate) }}</p>
                                 <br />
                                 {{   senderContent }}
                             </va-card-content>
@@ -62,6 +63,7 @@
 
 <script>
 import viewMessage from '@/pages/message/viewmessage.vue';
+import formatDate from '@/functions/formatdate.js';
 export default {
     data() {
         return {
@@ -90,6 +92,10 @@ export default {
         senderContent: {
             type: String,
             required: true
+        },
+        senderDate: {
+            type: String,
+            required: true
         }
     },
     methods: {
@@ -115,7 +121,11 @@ export default {
         },
         cancelReply() {
             this.$emit('message-cancelled');
-        }
+        },
+        formatMessageDate(date) {
+            return this.formatDate(date, 'MMMM DD, YYYY hh:mma', 'Invalid Date');
+        },
+        formatDate
     },
     components: {
         viewMessage

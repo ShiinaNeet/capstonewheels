@@ -513,6 +513,7 @@
                     :sender-email="message.sender_email"
                     :senderSubject="message.subject"
                     :senderContent="message.content"
+                    :senderDate="message.created_at"
                     @close-modal="handleReplyModalClose()"
                     @message-sent="handleReplyModalClose()"
                     @message-cancelled="handleReplyModalClose()"
