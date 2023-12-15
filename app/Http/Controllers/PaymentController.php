@@ -111,13 +111,11 @@ class PaymentController extends Controller
                 ->where('payment_items.payment_id', $request->payment_id)
                 ->first();
            
-          
-
             //Notification
             $this->cash_success_notify($payment->reference_no,$payment->student_id);
 
             //notifcation for admin side. For enrollment finished
-            $this->enrollment_success_for_admin_notify($payment->student_id,$enrolledService);
+            $this->enrollment_success_for_admin_notify($payment->student_id, $enrolledService->name);
             $this->student_payment_success_for_admin_notify($payment->reference_no);
 
 

@@ -144,6 +144,7 @@ Route::group(['middleware' => 'check_auth'], function () {
     Route::post('/company/save', [CompanyDetailsController::class, 'save']);
     Route::post('/messages/get', [MessageController::class, 'get']);
     Route::post('/notifications/get', [NotificationController::class, 'get']);
+    Route::post('/notifications/single_read', [NotificationController::class, 'mark_single_notif_as_read']);
     Route::post('/payment/update', [PaymentController::class, 'confirm_payment']);
     Route::post('/reschedule/save', [ServiceController::class, 'reschedule_student']);
 });
