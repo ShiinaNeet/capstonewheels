@@ -3,7 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\DatabaseController;
-use App\Http\Controllers\HelpController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NewsController;
@@ -60,7 +60,7 @@ Route::group(['middleware' => 'check_auth'], function () {
     Route::get('/enrollment', [PageController::class, 'student_enrollment']);
     Route::get('/enrollment/{mode}', [PageController::class, 'student_enrollment']);
     Route::get('/enrollment_form/{service_id}/{batch}', [PageController::class, 'enrollment_form']);
-    Route::get('/faqs', [HelpController::class, 'get']);
+    Route::get('/faqs', [FaqController::class, 'get']);
     Route::get('/get_accounts', [AccountController::class, 'get_accounts']);
     Route::get('/get_enrolled_students', [AccountController::class, 'get_enrolled_students']);
     Route::get('/get_enrolled_students_for_admin', [AccountController::class, 'get_enrolled_students_for_admin']);
@@ -90,9 +90,10 @@ Route::group(['middleware' => 'check_auth'], function () {
         Route::post('reschedule', [AccountController::class, 'rescheduled_enrolled']);
     });
     Route::prefix('faq')->group(function () {
-        Route::post('delete', [HelpController::class, 'delete']);
-        Route::post('disable', [HelpController::class, 'disable']);
-        Route::post('save', [HelpController::class, 'save']);
+        Route::post('delete', [FaqController::class, 'delete']);
+        Route::post('disable', [FaqController::class, 'disable']);
+        Route::post('save', [FaqController::class, 'save']);
+        Route::post('enable', [FaqController::class, 'enable']);
     });
     Route::prefix('messages')->group(function () {
         Route::post('delete', [MessageController::class, 'delete']);

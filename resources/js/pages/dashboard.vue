@@ -67,21 +67,6 @@
                     </div>
 
                     <div v-if="$root.auth.userType === 3">
-                        <div class="va-title mx-3 my-2">
-                            <va-icon
-                            name="supervisor_account"
-                            size="small"
-                            title="Users"
-                            class="ml-[2px] my-[3px]"
-                            :class="menu_open && ('mr-1')"
-                            />
-                            <span
-                            class="align-middle tracking-wider"
-                            :class="!menu_open && ('hidden')"
-                            >
-                                Users
-                            </span>
-                        </div>
                         <va-sidebar-item
                         v-if="menu_open"
                         v-for="(setting, idx) in users_mngt"
@@ -234,14 +219,14 @@
                 <div
                 id="settings-wrapper"
                 >
-                    <template v-if="activeSetting === 'Account'">
+                    <template v-if="activeSetting === 'User Management'">
                         <accounts :session-id="accountId" />
                     </template>
                     <template v-if="activeSetting === 'News'">
                         <news />
                     </template>
-                    <template v-if="activeSetting === 'Help'">
-                        <help />
+                    <template v-if="activeSetting === 'FAQ'">
+                        <faq />
                     </template>
                     <template v-if="activeSetting === 'Requirement'">
                         <requirements />
@@ -314,7 +299,7 @@ import auditlogs_tbl from '@/components/admin/auditlogs.vue';
 import dashboardmenu from '@/components/admin/dashboard.vue';
 import database_mngt from '@/components/admin/database.vue';
 import enrstudrep_tbl from '@/components/reports/enrolledstudents.vue';
-import help_tbl from '@/components/admin/help.vue';
+import faq_tbl from '@/components/admin/faq.vue';
 import news_tbl from '@/components/admin/news.vue';
 import incomerep_tbl from '@/components/reports/income.vue';
 import companyDetails_tbl from '@/components/admin/companydetails.vue';
@@ -328,11 +313,10 @@ export default {
     data () {
         return {
             dashboard: ['Dashboard'],
-            users_mngt: ['Account'],
-            media_mngt: ['News', 'Help', 'Company Details'],
+            media_mngt: ['News', 'FAQ', 'Company Details'],
             enrol_mngt: ['Schedule', 'Service', 'Requirement', 'Room', 'Vehicle'],
             reprt_mngt: ['LTO Enrolled Students', 'Failed Enrollments', 'Income'],
-            bckup_mngt: ['Database Import', 'Database Export', 'Audit Log'],
+            bckup_mngt: ['User Management','Database Import', 'Database Export', 'Audit Log', ],
             activeSetting: 'Dashboard',
             menu_open: false,
         };
@@ -341,7 +325,7 @@ export default {
         navigation: navmenu,
         accounts: accounts_tbl,
         audits: auditlogs_tbl,
-        help: help_tbl,
+        faq: faq_tbl,
         news: news_tbl,
         enrstudrep: enrstudrep_tbl,
         incomerep: incomerep_tbl,

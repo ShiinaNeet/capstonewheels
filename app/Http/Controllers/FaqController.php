@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Libraries\SharedFunctions;
 use App\Models\AuditTrail;
-use App\Models\Help;
+use App\Models\Faq;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class HelpController extends Controller
+
+class FaqController extends Controller
 {
     public function delete(Request $request)
     {
         $rs = SharedFunctions::default_msg();
-        $query = Help::find($request->id);
+        $query = Faq::find($request->id);
         if ($query->forceDelete()) {
             $rs = SharedFunctions::success_msg("Help deleted");
             SharedFunctions::create_audit_log(
@@ -25,19 +28,32 @@ class HelpController extends Controller
     public function disable(Request $request)
     {
         $rs = SharedFunctions::default_msg();
-        $query = Help::find($request->id);
+        
+        $query = Faq::find($request->id);
+
         if ($query->delete()) {
-            $rs = SharedFunctions::success_msg("Help disabled");
+            $rs = SharedFunctions::success_msg('Faq disabled');
             SharedFunctions::create_audit_log(
-                AuditTrail::CATEGORY_HELP, AuditTrail::ACTION_UPDATE, "Help " . $query->question . " disabled"
+                AuditTrail::CATEGORY_HELP, AuditTrail::ACTION_UPDATE, "Faq " . $query->question . " disabled"
             );
         }
+
+       
+        return response()->json($rs);
+    }
+    public function enable(Request $request)
+    {
+        $rs = SharedFunctions::default_msg();
+        
+        Faq::withTrashed()->find($request->id)->restore();
+
+        $rs = SharedFunctions::success_msg('Faq wewewewewe');
         return response()->json($rs);
     }
 
     public function get()
     {
-        $query = Help::withTrashed()
+        $query = Faq::withTrashed()
             ->orderBy('created_at', 'DESC')
             ->get();
         $rs = SharedFunctions::success_msg('Success');
@@ -53,8 +69,8 @@ class HelpController extends Controller
             'answer' => 'required|max:255'
         ]);
         $new_help = false;
-        if (isset($request->id)) $help = Help::find($request->id);
-        else { $help = new Help(); $new_help = true; }
+        if (isset($request->id)) $help = Faq::find($request->id);
+        else { $help = new Faq(); $new_help = true; }
         $help->question = $request->question;
         $help->answer = $request->answer;
         if ($help->save()) {
