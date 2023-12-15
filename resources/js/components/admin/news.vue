@@ -90,7 +90,7 @@
                 title="Toggle Status"
                 preset="plain"
                 :icon="rowData.deleted_at ? 'lock' : 'lock_open'"
-                :disabled="rowData.deleted_at ? true : false"
+              
                 @click="editEvent.data = { ...rowData }, editEvent.statusModal = !editEvent.statusModal"
                 />
                 <va-button
@@ -316,12 +316,6 @@
                 <div class="va-title mb-3">
                     Status
                 </div>
-                <va-alert color="warning">
-                    <template #icon>
-                        <va-icon name="warning" />
-                    </template>
-                    This action is currently irreversible
-                </va-alert>
                 <va-input
                 type="textarea"
                 :model-value="editEvent.data.title"
@@ -343,7 +337,7 @@
                         :icon="!editEvent.data.deleted_at ? 'lock' : 'lock_open'"
                         :loading="editEvent.saved"
                         :disabled="editEvent.saved"
-                        @click="editEvent.saved = true, toggleNewsStatus()"
+                        @click="editEvent.saved = true, handleButtonClick()"
                         >
                             <p class="font-normal">{{ !editEvent.data.deleted_at ? "Deactivate" : "Activate" }}</p>
                         </va-button>
@@ -430,11 +424,39 @@ export default {
         this.getNewsEvent();
     },
     methods: {
+        handleButtonClick() {
+            this.editEvent.saved = true;
+
+            if (this.editEvent.data.deleted_at === null) {
+                this.toggleNewsStatus();
+            } else {
+                this.enableNewsStatus();
+            }
+        },
         toggleNewsStatus() {
             axios({
                 method: 'POST',
                 type: 'JSON',
                 url: '/news/disable',
+                data: { id: this.editEvent.data.id }
+            }).then(response => {
+                if (response.data.status == 1) {
+                    this.$root.prompt(response.data.text);
+                    this.editEvent.data = {};
+                    this.editEvent.statusModal = false;
+                    this.editEvent.saved = false;
+
+                    this.getNewsEvent();
+                } else this.$root.prompt(response.data.text);
+            }).catch(error => {
+                this.$root.prompt(error.response.data.message);
+            });
+        },
+        enableNewsStatus() {
+            axios({
+                method: 'POST',
+                type: 'JSON',
+                url: '/news/enable',
                 data: { id: this.editEvent.data.id }
             }).then(response => {
                 if (response.data.status == 1) {

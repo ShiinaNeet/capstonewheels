@@ -16,6 +16,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\CompanyDetailsController;
+use App\Models\News;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -105,6 +106,7 @@ Route::group(['middleware' => 'check_auth'], function () {
         Route::post('delete', [NewsController::class, 'delete']);
         Route::post('disable', [NewsController::class, 'disable']);
         Route::post('save', [NewsController::class, 'save']);
+        Route::post('enable', [NewsController::class, 'enable']);
     });
     Route::prefix('report')->group(function () {
         Route::post('enrolled_students', [ReportController::class, 'get_enrolled_students']);

@@ -37,7 +37,15 @@ class NewsController extends Controller
         }
         return response()->json($rs);
     }
+    public function enable(Request $request)
+    {
+        $rs = SharedFunctions::default_msg();
+        
+        News::withTrashed()->find($request->id)->restore();
 
+        $rs = SharedFunctions::success_msg('News enabled');
+        return response()->json($rs);
+    }
     public function get()
     {
         $news = News::withTrashed()

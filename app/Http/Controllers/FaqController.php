@@ -47,7 +47,7 @@ class FaqController extends Controller
         
         Faq::withTrashed()->find($request->id)->restore();
 
-        $rs = SharedFunctions::success_msg('Faq wewewewewe');
+        $rs = SharedFunctions::success_msg('Faq activated');
         return response()->json($rs);
     }
 
