@@ -315,6 +315,7 @@ class ServiceController extends Controller
                 'user_details.lastname'
             )
             ->where('enrollments.status', Enrollment::STATUS_CANCELLED)
+            ->where('payments.status', 2)
             ->get()
             ->map($payment_item);
         $rs = SharedFunctions::success_msg('Success');

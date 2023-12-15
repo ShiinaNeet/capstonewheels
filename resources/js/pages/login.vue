@@ -194,7 +194,7 @@
                     </div> -->
                 </div>
             </div>
-            <div class="flex items-center w-1/4 pt-8 min-h-[calc(100vh-62px)]">
+            <div class="flex items-center w-1/4 pt-8 min-h-[calc(100vh-62px)]" hidden>
                 <div class="mx-3 block text-center xl:w-[350px] xl:max-w-[350px] max-xl:w-[250px] max-xl:max-w-[250px] overflow-x-hidden">
                     <h5 class="text-base">
                         About Us
