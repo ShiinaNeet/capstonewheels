@@ -90,7 +90,7 @@
                 title="Toggle Status"
                 preset="plain"
                 :icon="rowData.deleted_at ? 'lock' : 'lock_open'"
-                :disabled="rowData.deleted_at ? true : false"
+                
                 @click="editHelp.data = { ...rowData }, editHelp.statusModal = !editHelp.statusModal"
                 />
                 <va-button
@@ -121,13 +121,7 @@
             </template>
         </va-data-table>
     </div>
-    <div class="mx-5 mb-5">
-        <div class="va-title text-neutral-400">
-            Input fields with
-            <span class="text-sm leading-[0.25rem]">*</span>
-            are required
-        </div>
-    </div>
+
 
     <va-modal
     v-model="createHelp.modal"
@@ -137,7 +131,7 @@
         <template #content>
             <div class="w-[410px] p-5">
                 <div class="va-title mb-3">
-                    Add Help
+                    Add FAQ
                 </div>
                 <va-input
                 v-model="createHelp.data.question"
@@ -311,14 +305,9 @@
         <template #content>
             <div class="w-[410px] p-5">
                 <div class="va-title mb-3">
-                    Help Status
+                    FAQ Status
                 </div>
-                <va-alert color="warning">
-                    <template #icon>
-                        <va-icon name="warning" />
-                    </template>
-                    This action is currently irreversible
-                </va-alert>
+                
                 <va-input
                 type="textarea"
                 :model-value="editHelp.data.question"
@@ -340,7 +329,7 @@
                         :icon="!editHelp.data.deleted_at ? 'lock' : 'lock_open'"
                         :loading="editHelp.saved"
                         :disabled="editHelp.saved"
-                        @click="editHelp.saved = true, toggleHelpStatus()"
+                        @click="editHelp.saved = true,handleButtonClick()"
                         >
                             <p class="font-normal">{{ !editHelp.data.deleted_at ? "Deactivate" : "Activate" }}</p>
                         </va-button>
@@ -382,7 +371,7 @@ export default {
     data () {
         const faq = {
             tblColumns: [
-                { key: "question", label: "Help", width: 90, sortable: true },
+                { key: "question", label: "Frequently asked Question", width: 90, sortable: true },
                 { key: "deleted_at", label: "Status", width: 90, sortable: false },
                 { key: "answer", label: "Answer", width: 80, tdAlign: "center", sortable: false },
                 { key: "created_at", label: "Created On", width: 125, sortable: true },
@@ -427,11 +416,39 @@ export default {
         this.getFAQS();
     },
     methods: {
+        handleButtonClick() {
+            this.editHelp.saved = true;
+
+            if (this.editHelp.data.deleted_at === null) {
+                this.toggleHelpStatus();
+            } else {
+                this.enableHelpStatus();
+            }
+        },
         toggleHelpStatus() {
             axios({
                 method: 'POST',
                 type: 'JSON',
                 url: '/faq/disable',
+                data: { id: this.editHelp.data.id }
+            }).then(response => {
+                if (response.data.status == 1) {
+                    this.$root.prompt(response.data.text);
+                    this.editHelp.data = { ...newHelp };
+                    this.editHelp.statusModal = false;
+                    this.editHelp.saved = false;
+
+                    this.getFAQS();
+                } else this.$root.prompt(response.data.text);
+            }).catch(error => {
+                this.$root.prompt(error.response.data.message);
+            });
+        },
+        enableHelpStatus() {
+            axios({
+                method: 'POST',
+                type: 'JSON',
+                url: '/faq/enable',
                 data: { id: this.editHelp.data.id }
             }).then(response => {
                 if (response.data.status == 1) {
