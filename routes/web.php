@@ -16,7 +16,6 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\CompanyDetailsController;
-use App\Models\News;
 use Illuminate\Support\Facades\Route;
 
 /*
