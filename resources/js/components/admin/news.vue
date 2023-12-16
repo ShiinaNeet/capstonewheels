@@ -55,17 +55,38 @@
             </template>
             <template #expandableRow="{ rowData }">
                 <div
-                class="p-2"
-                id="table-row-desc"
+                class="grid gap-y-2 p-2"
                 >
-                    <va-input
-                    type="textarea"
-                    :model-value="rowData.description"
-                    placeholder="No description available"
-                    readonly
-                    autosize
-                    outline
-                    />
+                    <div class="flex w-full gap-x-2 ">
+                        <div
+                        class="w-[150px] justify-between"
+                        id="image"
+                        >
+                            <va-image
+                            class="
+                                min-w-[150px] max-w-[150px!important]
+                                min-h-[150px] max-h-[150px!important]
+                                rounded-sm bg-neutral-100
+                            "
+                            :src="$root.forgeImageFile(rowData.image[0], 'news', false)"
+                            :placeholder-src="$root.forgeImageFile(null, null, false)"
+                            lazy
+                            />
+                        </div>
+                        <div
+                        class="w-[100%]"
+                        id="table-row-desc"
+                        >
+                            <va-input
+                            type="textarea"
+                            :model-value="rowData.description"
+                            placeholder="No description available"
+                            readonly
+                            autosize
+                            outline
+                            />
+                        </div>
+                    </div>
                 </div>
             </template>
             <template #cell(deleted_at)="{ value }">
@@ -84,13 +105,13 @@
                 preset="plain"
                 icon="edit"
                 @click="editEvent.data = { ...rowData }, editEvent.modal = !editEvent.modal"
+                :disabled="rowData.deleted_at"
                 />
                 <va-button
                 class="mb-2 mr-2 hover:opacity-[0.65!important]"
                 title="Toggle Status"
                 preset="plain"
                 :icon="rowData.deleted_at ? 'lock' : 'lock_open'"
-              
                 @click="editEvent.data = { ...rowData }, editEvent.statusModal = !editEvent.statusModal"
                 />
                 <va-button
@@ -166,6 +187,19 @@
                 :min-rows="10"
                 :max-rows="10"
                 />
+                <div>
+                    <va-file-upload
+                    v-model="createEvent.data.image"
+                    class="mb-0"
+                    file-types=".jpg,.jpeg,.png,image/jpeg,image/png"
+                    dropzone
+                    dropZoneText="Drop file or click here to upload"
+                    :class="!createEvent.fileOverSizeLimit ? 'valid' : 'error'"
+                    :disabled="createEvent.saved"
+                    @update:modelValue="createEvent.data.image.length > 1 && createEvent.data.image.shift(), createEvent.fileOverSizeLimit = false"
+                    />
+                </div>
+               
                 <div class="flex w-full gap-x-3 mt-[15px]">
                     <div class="flex w-1/2 justify-between">
                         <va-button
@@ -230,6 +264,33 @@
                 :min-rows="10"
                 :max-rows="10"
                 />
+                <va-file-upload
+                    v-model="editEvent.data.image"
+                    class="mb-0"
+                    file-types=".jpg,.jpeg,.png,image/jpeg,image/png"
+                    dropzone
+                    dropZoneText="Drop file or click here to upload"
+                    :class="!editEvent.fileOverSizeLimit && !editEvent.fileNotFound ? 'valid' : 'error'"
+                    :disabled="editEvent.saved"
+                    @update:modelValue="
+                        editEvent.data.image.length > 1 && editEvent.data.image.shift(),
+                        editEvent.fileOverSizeLimit = false,
+                        editEvent.fileNotFound = false
+                    "/>
+                    <div v-if="editEvent.fileOverSizeLimit">
+                        <div class="va-message-list mt-[2px!important]" style="color: #E42222;">
+                            <div class="va-message-list__message">
+                                The image exceeds the maximum file size.
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="editEvent.fileNotFound">
+                        <div class="va-message-list mt-[2px!important]" style="color: #E42222;">
+                            <div class="va-message-list__message">
+                                The image is missing or cannot be retrieved.
+                            </div>
+                        </div>
+                    </div>
                 <div class="flex w-full gap-x-3 mt-[15px]">
                     <div class="flex w-1/2 justify-between">
                         <va-button
@@ -248,7 +309,7 @@
                         <va-button
                         icon="save"
                         :loading="editEvent.saved"
-                        :disabled="editEvent.saved"
+                        :disabled="editEvent.saved || editEvent.fileNotFound"
                         @click="editEvent.saved = true, insertUpdateEvent('save')"
                         >
                             <p class="font-normal">Save</p>
@@ -286,7 +347,8 @@
                     <div class="flex w-1/2 justify-between">
                         <va-button
                         preset="secondary"
-                        @click="editEvent.data = { ...createEvent.resetData }, editEvent.deleteModal = !editEvent.deleteModal"
+                        @click="editEvent.data = { ...createEvent.resetData }, 
+                        editEvent.deleteModal = !editEvent.deleteModal"
                         >
                             <p class="font-normal">Cancel</p>
                         </va-button>
@@ -295,7 +357,7 @@
                         <va-button
                         icon="check"
                         :loading="editEvent.saved"
-                        :disabled="editEvent.saved"
+                        :disabled="editEvent.saved "
                         @click="editEvent.saved = true, deleteNewsEvent()"
                         >
                             <p class="font-normal">Confirm</p>
@@ -373,6 +435,7 @@ const newEvent = {
     description: "",
     created_at: formatDate(new Date().getTime(), 'YYYY-MM-DD HH:mm:ss'),
     id: null,
+    image:[],
 };
 
 export default {
@@ -396,6 +459,8 @@ export default {
                 titleEmpty: false,
                 descEmpty: false,
                 saved: false,
+                image: false,
+                fileOverSizeLimit: false,
                 resetData: { ...newEvent },
                 data: { ...newEvent }
             },
@@ -406,11 +471,15 @@ export default {
                 titleEmpty: false,
                 descEmpty: false,
                 saved: false,
-                data: {}
+                data: {},
+                image: false,
+                fileOverSizeLimit: false,
+                fileNotFound: false,
             },
             activePreviewRow: null,
             filtered: null,
-            filter: ""
+            filter: "",
+            uploadSizeLimitInBytes: this.$root.fileSizeConverterToBytes(this.$root.config.uploadSizeLimitInMBytes)
         };
     },
     computed: {
@@ -495,11 +564,29 @@ export default {
         },
         insertUpdateEvent(method) {
             if (method !== 'create' || method !== 'save') {
+                let fdata, image;
+                method === 'create' ? (
+                    image = this.createEvent.data.image,
+                    // image = this.createService.data.image, delete this.createService.data.image,
+                    this.createEvent.data.filesize_limit = this.uploadSizeLimitInBytes,
+                    fdata = this.createEvent.data
+                    )
+                    : (method === 'save') && (
+                    image = this.editEvent.data.image,
+                    // image = this.editService.data.image, delete this.editService.data.image,
+                    this.editEvent.data.filesize_limit = this.uploadSizeLimitInBytes,
+                    fdata = this.editEvent.data
+                );
+                const data = new FormData();
+                data.append('form', JSON.stringify(fdata));
+                (image.length > 0 && image[0].size !== 0) && data.append('file', image[0]);
+
                 axios({
                     method: 'POST',
                     type: 'JSON',
                     url: '/news/save',
-                    data: method === 'create' ? this.createEvent.data : (method === 'save' && this.editEvent.data)
+                    data: data,
+                    headers: { 'Content-Type': 'multipart/form-data' }
                 }).then(response => {
                     if (response.data.status == 1) {
                         this.$root.prompt(response.data.text);
@@ -508,7 +595,8 @@ export default {
                             this.createEvent.modal = false,
                             this.createEvent.titleEmpty = false,
                             this.createEvent.descEmpty = false,
-                            this.createEvent.saved = false
+                            this.createEvent.saved = false,
+                            this.createEvent.fileOverSizeLimit = false
                         )
                         : (
                             method === 'save' && (
@@ -516,7 +604,9 @@ export default {
                                 this.editEvent.modal = false,
                                 this.editEvent.titleEmpty = false,
                                 this.editEvent.descEmpty = false,
-                                this.editEvent.saved = false
+                                this.editEvent.saved = false,
+                                this.editEvent.fileOverSizeLimit = false,
+                                this.editEvent.fileNotFound = false
                             )
                         );
 
@@ -538,6 +628,12 @@ export default {
                             method === 'save' && (this.editEvent.descEmpty = true)
                         );
                     }
+                    if (resDataError.filter(key => key == 'image').length) {
+                        method === 'create' ? this.createService.fileOverSizeLimit = true
+                        : (
+                            method === 'save' && (this.editService.fileOverSizeLimit = true)
+                        );
+                    }
 
                     method === 'create' ? this.createEvent.saved = false
                     : (method === 'save' && (this.editEvent.saved = false));
@@ -548,7 +644,7 @@ export default {
             axios({
                 method: 'GET',
                 type: 'JSON',
-                url: '/news'
+                url: '/news/sort/created_at'
             }).then(response => {
                 if (response.data.status == 1) {
                     this.eventsList = response.data.result;

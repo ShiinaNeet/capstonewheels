@@ -34,7 +34,7 @@ Route::get('/logout', [AccountController::class, 'logout']);
 Route::get('/aboutus', [PageController::class, 'aboutus']);
 Route::get('/contactus', [PageController::class, 'contactus']);
 Route::get('/company', [CompanyDetailsController::class, 'get']);
-Route::get('/news', [NewsController::class, 'get']);
+Route::get('/news/sort/{sort_by}', [NewsController::class, 'get']);
 Route::get('/newsevent', [PageController::class, 'newsevent']);
 Route::get('/terms ', [PageController::class, 'terms']);
 

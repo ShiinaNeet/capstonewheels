@@ -67,23 +67,6 @@
                     </div>
 
                     <div v-if="$root.auth.userType === 3">
-                        <va-sidebar-item
-                        v-if="menu_open"
-                        v-for="(setting, idx) in users_mngt"
-                        :key="idx"
-                        :active="isSettingActive(setting)"
-                        @click="setSettingActive(setting)"
-                        >
-                            <va-sidebar-item-content class="min-h-[20px!important] p-[7px!important]">
-                                <va-sidebar-item-title class="text-sm select-none">
-                                    {{ setting }}
-                                </va-sidebar-item-title>
-                            </va-sidebar-item-content>
-                        </va-sidebar-item>
-                        <va-divider class="pr-1" />
-                    </div>
-
-                    <div v-if="$root.auth.userType === 3">
                         <div class="va-title mx-3 my-2">
                             <va-icon
                             name="mms"
