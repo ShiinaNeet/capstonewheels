@@ -92,38 +92,43 @@
                 icon="edit"
                 @click="
                     editService.data = { ...rowData },
-                    editService.data.image =
-                        editService.data.image.length > 0 ? (
-                            $root.forgeImageFile(editService.data.image, 'services')
-                            .then(result => {
-                                editService.data.image = result;
-                            })
-                            .catch(error => {
-                                editService.fileNotFound = true;
-                                editService.data.image = error;
-                            })
-                        )
-                    : [],
-                    editService.modal = !editService.modal
+                    editService.modal = true
                 "/>
                  </template>
         </va-data-table>
     </div>
 
-    <!-- <va-modal
-    v-model.lazy="editService.modal"
+    <va-modal
+    v-model="editService.modal"
     noOutsideDismiss
     noPadding
     >
         <template #content>
             <div class="w-[410px] p-5">
                 <div class="va-title mb-3">
-                    Edit Service
+                    Edit service
                 </div>
-              
+                <div class="flex w-full gap-x-3 mt-[15px]">
+                    <div class="flex w-1/2 justify-between">
+                        <va-button
+                        preset="secondary"
+                        @click="editService.modal = false">
+                            <p class="font-normal">Cancel</p>
+                        </va-button>
+                    </div>
+                    <div class="flex w-1/2 justify-between">
+                        <va-button
+                        icon="save"
+
+                        @click="SaveFunctionhere"
+                        >
+                            <p class="font-normal">Save</p>
+                        </va-button>
+                    </div>
+                </div>
             </div>
         </template>
-    </va-modal> -->
+    </va-modal>
 </template>
 
 
@@ -159,8 +164,7 @@ export default {
             services: [],
             service: null,
             list: [],
-        };
-    }, editService: {
+            editService: {
                 modal: false,
                 deleteModal: false,
                 price: {
@@ -176,7 +180,8 @@ export default {
                 saved: false,
                 data: {}
             },
-    props: ['mode'],
+        };
+    },
     mounted() {
         var $this = this;
         $this.getServices();
@@ -244,6 +249,7 @@ export default {
             });
         },
         formatDate
-    }
+    },
+    props: ['mode'],
 }
 </script>
