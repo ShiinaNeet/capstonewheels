@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\Commands\CheckServiceSchedules;
+use App\Console\Commands\CompleteEnrollment;
 use App\Console\Commands\DeleteOldInquiry;
 use App\Console\Commands\GetPendingEnrollments;
 class Kernel extends ConsoleKernel
@@ -17,6 +18,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(GetPendingEnrollments::class)->everyMinute();
         $schedule->command(CheckServiceSchedules::class)->everyMinute();
         $schedule->command(DeleteOldInquiry::class)->everyMinute();
+        $schedule->command(CompleteEnrollment::class)->everyMinute();
     }
 
     /**

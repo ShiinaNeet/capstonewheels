@@ -1,10 +1,10 @@
 <template>
     <navigation />
-    <div class="flex-auto m-5">
+    <div class="flex flex-col col-span-1 m-5 flex-center">
       <div class="heading">
         <h1 class="text-2xl">News</h1>
       </div>
-      <div class="body my-5 mr-5" style="background-color: whitesmoke;">
+      <div class="body mt-5 mr-5 w-fit lg:w-[700px] sm:w-[300px]" style="background-color: whitesmoke;">
         <va-accordion class="w-12/12">
           <div
             v-for="(item, idx) in items"
@@ -14,18 +14,37 @@
             flat
             class="pb-3"
           >
-            <div class="">
-              <va-card>
-                <va-card-title>
-                  <h1>
-                   <strong class="text-sm"> {{ item.title }} </strong> <br />
-                    Date created: {{ formatDate(item.created_at, 'MMMM DD, YYYY', 'N/A') }}
-                  </h1>
-                </va-card-title>
-                <va-card-content class="text-base">
-                  <p style="word-wrap: break-word;">{{ item.description }}</p>
-                </va-card-content>
-              </va-card>
+            <div class="flex flex-col flex-wrap gap-5">
+              <VaCard stripe primary>
+                <VaCardBlock
+                  class="flex-nowrap"
+                  horizontal
+                >
+                  <div class="flex-auto">
+                    <VaCardTitle>
+                      <h1>
+                        {{ item.title }}
+                        <br />
+                        Date created: {{ formatDate(item.created_at, 'MMMM DD, YYYY', 'N/A') }}
+                      </h1>
+                    </VaCardTitle>
+                    <VaCardContent>
+                      <p style="word-wrap: break-word;">{{ item.description }}</p>
+                    </VaCardContent>
+                  </div>
+                  <va-image
+                  class="
+                      min-w-[150px] max-w-[150px!important]
+                      min-h-[150px] max-h-[150px!important]
+                      rounded-sm bg-neutral-100
+                      flex-grow-0 flex-shrink-0 basis-52
+                  "
+                  :src="$root.forgeImageFile(item.image[0], 'news', false)"
+                  :placeholder-src="$root.forgeImageFile(null, null, false)"
+                  lazy
+                  />
+                </VaCardBlock>
+              </VaCard>
             </div>
           </div>
         </va-accordion>
@@ -53,9 +72,9 @@
     methods: {
       GetItems() {
         axios({
-          method: 'GET',
+          method: 'POST',
           type: 'JSON',
-          url: '/news',
+          url: '/news/active',
         })
           .then((response) => {
             if (response.data.status == 1) {

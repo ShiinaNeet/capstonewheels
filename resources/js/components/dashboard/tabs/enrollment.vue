@@ -188,7 +188,7 @@
 
         <va-data-table
         id="data-table"
-        v-if="stabs[stab].title === 'Approved'"
+        v-if="stabs[stab].title === 'Enrolled'"
         :items="stud.approved.items"
         :columns="stud.approved.table.columns"
         :per-page="stud.approved.table.perPage"
@@ -446,6 +446,139 @@
                 </tr>
             </template>
         </va-data-table>
+
+        <va-data-table
+        id="data-table"
+        v-if="stabs[stab].title === 'Completed'"
+        :items="stud.completed.items"
+        :columns="stud.completed.table.columns"
+        :per-page="stud.completed.table.perPage"
+        :current-page="stud.completed.table.currPage"
+        no-data-html="No completed enrollment(s) with completed schedule to show"
+        :filter="filter"
+        @filtered="filtered = $event.items"
+        animated
+        >
+            <template #cell(reference_no)="{ value }">
+                {{ value }}
+            </template>
+            <template #cell(name)="{ rowData }">
+                {{ rowData.firstname + ' ' + rowData.lastname }}
+            </template>
+            <template #cell(amount)="{ rowData }">
+                ₱ {{ parseFloat(getServiceTotalAmount(rowData.services)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            </template>
+            <template #cell(services)="{ row, isExpanded }">
+                <va-button
+                class="w-full"
+                preset="secondary"
+                size="small"
+                :icon="isExpanded ? 'va-arrow-up': 'va-arrow-down'"
+                @click="row.toggleRowDetails(), stud.approved.activePreviewRow = row"
+                >
+                    {{ !isExpanded ? 'Show': 'Hide' }}
+                </va-button>
+            </template>
+            <template #expandableRow="{ rowData }">
+                <va-tree-view
+                :nodes="rowData.services"
+                text-by="service_name"
+                children-by="schedules"
+                expand-all
+                >
+                    <template #content="node">
+                        <div
+                        v-if="node.service_name"
+                        class="flex items-center gap-x-[7px]"
+                        >
+                            <div class="shrink">
+                                <va-avatar
+                                v-if="node.image"
+                                :src="$root.forgeImageFile(node.image, 'services', false)"
+                                :fallback-src="$root.forgeImageFile(null, null, false)"
+                                color="#F5F5F5"
+                                size="small"
+                                square
+                                />
+                            </div>
+                            <div class="shrink">
+                                <div class="font-semibold mb-1">
+                                    {{ node.service_name }}
+                                </div>
+                                <div class="flex gap-x-[15px]">
+                                    <div class="shrink">
+                                        Batch:
+                                        <span class="ml-2 va-text-secondary">
+                                            {{ node.batch }}
+                                        </span>
+                                    </div>
+                                    <div class="shrink">
+                                        Price:
+                                        <span class="ml-2 va-text-secondary">
+                                            ₱ {{ parseFloat(node.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                                        </span>
+                                    </div>
+                                    <div
+                                    v-if="node.type == 0"
+                                    class="shrink"
+                                    >
+                                        Room:
+                                        <span class="ml-2 va-text-secondary">
+                                            {{ node.room }}
+                                        </span>
+                                    </div>
+                                    <div
+                                    v-if="node.type == 1"
+                                    class="shrink"
+                                    >
+                                        Vehicle:
+                                        <span class="ml-2 va-text-secondary">
+                                            {{ node.vehicle }}
+                                        </span>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                        v-if="node.day_of_week"
+                        >
+                            {{ getDateTimeSchedule(node) }}
+                        </div>
+                    </template>
+                </va-tree-view>
+            </template>
+
+            <template #cell(mode_of_payment)="{ value }">
+                <va-badge
+                :text="value && (mop[value].label)"
+                :color="value && (mop[value].color)"
+                />
+            </template>
+            <template #cell(created_at)="{ value }">
+                {{ formatDate(value, 'MMM. Do YYYY', 'Invalid Date') }}
+            </template>
+
+            <template #bodyAppend>
+                <tr v-if="$root.tblPagination(stud.completed.items)">
+                    <td
+                    id="pagination"
+                    :colspan="stud.completed.table.columns.length"
+                    >
+                        <div class="flex pt-[10px] select-none">
+                            <va-pagination
+                            class="justify-center"
+                            v-model="stud.completed.table.currPage"
+                            :pages="filter == '' ? $root.tblPagination(stud.completed.items) : (pages, stud.completed.table.currPage = 1)"
+                            input
+                            />
+                        </div>
+                    </td>
+                </tr>
+            </template>
+        </va-data-table>
+
     </div>
 
     <va-modal
@@ -542,6 +675,17 @@ export default {
             ],
         };
 
+        const completeEnrollment = {
+            tblColumns: [
+                { key: "reference_no", label: "Reference No.", width: 150, sortable: false },
+                { key: "name", label: "Name", width: 200, sortable: true },
+                { key: "services", label: "Services", width: 80, tdAlign: "center", sortable: false },
+                { key: "amount", label: "Amount", width: 110, sortable: false },
+                { key: "mode_of_payment", label: "MOP", width: 85, sortable: true },
+                { key: "created_at", label: "Created On", width: 125, sortable: true },
+                { key: "id", label: "Action", width: 60, sortable: false },
+            ],
+        };
         return {
             stud: {
                 pending: {
@@ -582,6 +726,15 @@ export default {
                     items: [],
                     activePreviewRow: null
                 },
+                completed: {
+                    table: {
+                        columns: completeEnrollment.tblColumns.slice(0,-1),
+                        perPage: this.$root.config.tblPerPage,
+                        currPage: this.$root.config.tblCurrPage,
+                    },
+                    items: [],
+                    activePreviewRow: null
+                },
             },
             filtered: null,
             filter: "",
@@ -591,8 +744,10 @@ export default {
             ],
             stabs: [
                 { title: 'Pending', icon: 'edit_calendar' },
-                { title: 'Approved', icon: 'verified' },
+                { title: 'Enrolled', icon: 'verified' },
+                { title: 'Completed', icon: 'done' },
                 { title: 'Cancelled', icon: 'cancel' },
+               
                 // { title: 'Failed', icon: 'tab_unselected' },
                 // { title: 'History', icon: 'recent_actors' },
             ],
@@ -663,6 +818,7 @@ export default {
                     this.stud.pending.items = response.data.result.pending;
                     this.stud.approved.items = response.data.result.verified;
                     this.stud.cancelled.items = response.data.result.cancelled_enrollments;
+                    this.stud.completed.items = response.data.result.completed_enrollments;
                 } else this.$root.prompt(response.data.text);
             }).catch(error => {
                 this.$root.prompt(error.response.data.message);
