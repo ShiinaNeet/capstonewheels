@@ -40,9 +40,6 @@
                     </th>
                 </tr>
             </template>
-            <template #cell(w)="{ value }">
-                <P>qwewqe</P>
-            </template>
             <template #cell(category)="{ value }">
                 {{
                     auds.auditCategory[
@@ -66,7 +63,6 @@
                 </p>
             </template>
             <template #cell(action_description)="{ row, isExpanded }">
-                
                 <va-button
                 class="w-full"
                 preset="secondary"
