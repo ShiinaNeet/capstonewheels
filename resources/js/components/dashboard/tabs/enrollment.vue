@@ -188,7 +188,7 @@
 
         <va-data-table
         id="data-table"
-        v-if="stabs[stab].title === 'Approved'"
+        v-if="stabs[stab].title === 'Enrolled'"
         :items="stud.approved.items"
         :columns="stud.approved.table.columns"
         :per-page="stud.approved.table.perPage"
@@ -744,9 +744,10 @@ export default {
             ],
             stabs: [
                 { title: 'Pending', icon: 'edit_calendar' },
-                { title: 'Approved', icon: 'verified' },
-                { title: 'Cancelled', icon: 'cancel' },
+                { title: 'Enrolled', icon: 'verified' },
                 { title: 'Completed', icon: 'done' },
+                { title: 'Cancelled', icon: 'cancel' },
+               
                 // { title: 'Failed', icon: 'tab_unselected' },
                 // { title: 'History', icon: 'recent_actors' },
             ],
