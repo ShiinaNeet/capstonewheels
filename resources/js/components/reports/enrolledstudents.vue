@@ -58,6 +58,9 @@
         animated
         striped
         >
+            <template #cell(enrollment_id)="{ rowData }">
+                {{ rowData.enrollment_id }}
+            </template>
             <template #cell(gender)="{ value }">
                 {{ value == 1 ? "Male" : "Female" }}
             </template>
@@ -160,6 +163,7 @@ export default {
     data () {
         const record = {
             tblColumns: [
+                { key: "enrollment_id", label: "EnrollmentID", sortable: true },
                 { key: "student_name", label: "Student", sortable: true },
                 { key: "gender", label: "Gender", sortable: true },
                 { key: "hours", label: "Hours", sortable: true },

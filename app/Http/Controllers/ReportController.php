@@ -41,6 +41,7 @@ class ReportController extends Controller
             ->leftJoin('vehicles', 'services.vehicle_id', '=', 'vehicles.id')
             ->rightJoin('user_details as instruc', 'service_schedules.instructor_id', '=', 'instruc.user_id')
             ->select(DB::raw("CONCAT(student.lastname, ', ', student.firstname) AS student_name"))
+            ->addSelect('enrollments.id as enrollment_id')
             ->addSelect('student.lastname', 'student.firstname', 'student.middlename')
             ->addSelect('student.gender', 'student.birthdate')
             ->addSelect(DB::raw("CONCAT(instruc.lastname, ', ', instruc.firstname) AS instructor"))
