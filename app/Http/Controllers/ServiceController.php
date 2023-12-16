@@ -21,6 +21,7 @@ use App\Notifications\RescheduleStudentNotification;
 use App\Notifications\ScheduleCancelledNotification;
 use App\Notifications\ScheduleUpdateNotification;
 use App\Notifications\ServiceCreatedNotification;
+use Carbon\Carbon;
 use DateTime;
 use Ixudra\Curl\Facades\Curl;
 use Illuminate\Http\Request;
@@ -318,6 +319,35 @@ class ServiceController extends Controller
             ->where('payments.status', 2)
             ->get()
             ->map($payment_item);
+        $now = Carbon::now();
+        $completedEnrollmentWithcompleteSched = Enrollment::join('users', 'enrollments.student_id', '=', 'users.id')
+            ->leftJoin('user_details', 'users.id', '=', 'user_details.user_id')
+            ->leftJoin('payments', 'enrollments.student_id', '=', 'payments.student_id')
+            ->leftJoin('services', 'enrollments.service_id','=','services.id')
+            ->leftJoin('payment_items', 'enrollments.id','=','payment_items.enrollment_id')
+            ->leftJoin('service_schedules', function ($join) {
+                $join->on('services.id', '=', 'service_schedules.service_id')
+                    ->on('enrollments.batch', '=', 'service_schedules.batch');
+                })
+            ->select(
+                'payments.id',
+                'payments.reference_no',
+                'payments.mode_of_payment',
+                'payments.created_at',
+                'user_details.mobile',
+                'users.email',
+                'users.id as user_id',
+                'user_details.firstname',
+                'user_details.middlename',
+                'user_details.lastname'
+            )
+            ->addSelect('service_schedules.day_of_week', 'service_schedules.time_start', 'service_schedules.time_end')
+            ->where('enrollments.status', Enrollment::STATUS_COMPLETED)
+            ->where('payments.status', Payment::STATUS_VERIFIED)
+            ->where('service_schedules.day_of_week', '<', $now->toDateString())
+            ->where('service_schedules.status', '=', ServiceSchedule::STATUS_COMPLETE)
+            ->get()
+            ->map($payment_item);    
         $rs = SharedFunctions::success_msg('Success');
         $rs['result'] = [
             'pending' => $pending,
@@ -325,6 +355,7 @@ class ServiceController extends Controller
             'archived_students' => $archived_students,
             'cancelled_scheds' => $cancelled_scheds,
             'cancelled_enrollments' => $cancelledEnrollments,
+            'completed_enrollments' => $completedEnrollmentWithcompleteSched,
         ];
         return response()->json($rs);
     }
