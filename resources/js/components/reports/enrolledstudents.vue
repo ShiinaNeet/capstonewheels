@@ -84,9 +84,49 @@
                     </td>
                 </tr>
             </template>
+            <template #cell(id)="{ rowData }">
+                <va-button
+                class="mb-2 mr-2 hover:opacity-[0.65!important]"
+                title="Edit"
+                preset="plain"
+                icon="edit"
+                @click="
+                    editService.data = { ...rowData },
+                    editService.data.image =
+                        editService.data.image.length > 0 ? (
+                            $root.forgeImageFile(editService.data.image, 'services')
+                            .then(result => {
+                                editService.data.image = result;
+                            })
+                            .catch(error => {
+                                editService.fileNotFound = true;
+                                editService.data.image = error;
+                            })
+                        )
+                    : [],
+                    editService.modal = !editService.modal
+                "/>
+                 </template>
         </va-data-table>
     </div>
+
+    <!-- <va-modal
+    v-model.lazy="editService.modal"
+    noOutsideDismiss
+    noPadding
+    >
+        <template #content>
+            <div class="w-[410px] p-5">
+                <div class="va-title mb-3">
+                    Edit Service
+                </div>
+              
+            </div>
+        </template>
+    </va-modal> -->
 </template>
+
+
 
 <script>
 import formatDate from '@/functions/formatdate.js';
@@ -101,6 +141,7 @@ export default {
                 { key: "transmission", label: "Clutch", sortable: true },
                 { key: "date_start", label: "Attendance", sortable: true },
                 { key: "instructor", label: "Instructor", sortable: true },
+                { key: "id", label: "Action", width: 60, sortable: false }
             ],
         };
 
@@ -119,7 +160,22 @@ export default {
             service: null,
             list: [],
         };
-    },
+    }, editService: {
+                modal: false,
+                deleteModal: false,
+                price: {
+                    err: 0,
+                    empty: false,
+                },
+                durationEmpty: false,
+                roomIdEmpty: false,
+                vehicleIdEmpty: false,
+                requirementsEmpty: false,
+                fileOverSizeLimit: false,
+                fileNotFound: false,
+                saved: false,
+                data: {}
+            },
     props: ['mode'],
     mounted() {
         var $this = this;

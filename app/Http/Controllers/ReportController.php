@@ -48,6 +48,8 @@ class ReportController extends Controller
             ->addSelect(DB::raw("vehicles.transmission"))
             ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS date_start"))
             ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS date_end"))
+            ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS LTMS"))
+            ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS ACES"))
             ->where('service_schedules.day_of_week', '>=', $start)
             ->where('service_schedules.day_of_week', '<=', $end)
             ->where('enrollments.service_id', $request->service)
