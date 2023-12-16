@@ -6,6 +6,7 @@ use App\Libraries\SharedFunctions;
 use App\Models\AuditTrail;
 use App\Models\CompanyDetails;
 use App\Models\Enrollment;
+use App\Models\Faq;
 use App\Models\Help;
 use App\Models\News;
 use App\Models\Inquiry;
@@ -151,7 +152,7 @@ class DatabaseController extends Controller
         AuditTrail::truncate();
         CompanyDetails::truncate();
         Enrollment::truncate();
-        Help::truncate();
+        Faq::truncate();
         Inquiry::truncate();
         Message::truncate();
         DB::table('migrations')->truncate();
