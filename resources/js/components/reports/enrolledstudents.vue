@@ -106,8 +106,28 @@
         <template #content>
             <div class="w-[410px] p-5">
                 <div class="va-title mb-3">
-                    Edit service
+                    Update LTO Data
                 </div>
+                <va-date-input
+                v-model="editService.data.ltms"
+                requiredMark
+                label="LTMS"
+                />
+
+                <va-date-input
+                v-model="editService.data.aces"
+                requiredMark
+                label="ACES"
+                />
+
+                <va-input
+                v-model="editService.data.ccm"
+                label="Certificate Control Number"
+                requiredMark
+                class="w-full mb-2"
+                />
+
+
                 <div class="flex w-full gap-x-3 mt-[15px]">
                     <div class="flex w-1/2 justify-between">
                         <va-button
@@ -120,7 +140,7 @@
                         <va-button
                         icon="save"
 
-                        @click="SaveFunctionhere"
+                        @click="editService.saved = true, insertUpdateService('save')"
                         >
                             <p class="font-normal">Save</p>
                         </va-button>
@@ -234,6 +254,40 @@ export default {
             }).catch(error => {
                 this.$root.prompt(error.response.data.message);
             });
+        },
+        insertUpdateService(method) {
+            if (method !== 'create' || method !== 'save') {
+                let fdata;
+                fdata = this.editService.data
+                const data = new FormData();
+                data.append('form', JSON.stringify(fdata));
+                axios({
+                    method: 'POST',
+                    type: 'JSON',
+                    url: '/report/update',
+                    data: data,
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                }).then(response => {
+                    if (response.data.status == 1) {
+                        this.$root.prompt(response.data.text);
+                        method === 'create' ? (
+                            this.createService.data = { ...newServ },
+                            this.createService.modal = false,
+                            this.createService.saved = false
+                        )
+                        : (method === 'save' && (
+                                this.editService.data = { ...newServ },
+                                this.editService.modal = false,
+                                this.editService.saved = false
+                            )
+                        );
+
+                        this.getServices();
+                    } else this.$root.prompt(response.data.text);
+                }).catch(error => {
+                    // this.$root.prompt(error.response.data.message);
+                });
+            } else this.$root.prompt();
         },
         getServices() {
             axios({

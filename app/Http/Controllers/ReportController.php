@@ -49,7 +49,7 @@ class ReportController extends Controller
             ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS date_start"))
             ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS date_end"))
             ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS LTMS"))
-            ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS ACES"))
+            ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS ACES"))
             ->where('service_schedules.day_of_week', '>=', $start)
             ->where('service_schedules.day_of_week', '<=', $end)
             ->where('enrollments.service_id', $request->service)
@@ -225,6 +225,15 @@ class ReportController extends Controller
             ->get()->toArray();
         $rs = SharedFunctions::success_msg('Success');
         $rs['result'] = $query;
+        return response()->json($rs);
+    }
+
+    public function update(Request $request){
+        $rs = SharedFunctions::success_msg("Update Successfully");
+        $form = new Request(json_decode($request->form, true));
+        $ltmsdate = $form->ltms;
+        //dd(date('Y-m-d', strtotime($ltmsdate)));
+        dd($form);
         return response()->json($rs);
     }
 }

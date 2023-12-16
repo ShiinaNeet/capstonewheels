@@ -110,6 +110,7 @@ Route::group(['middleware' => 'check_auth'], function () {
     Route::prefix('report')->group(function () {
         Route::post('enrolled_students', [ReportController::class, 'get_enrolled_students']);
         Route::post('income', [ReportController::class, 'get_income_report']);
+        Route::post('update', [ReportController::class, 'update']);
     });
     Route::prefix('requirement')->group(function () {
         Route::post('delete', [RequirementController::class, 'delete']);
