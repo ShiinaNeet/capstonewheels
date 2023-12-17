@@ -114,6 +114,7 @@
                 <div class="va-title mb-3">
                     Update LTO Data
                 </div>
+
                 <va-date-input
                 v-model="editService.data.ltms"
                 requiredMark
@@ -131,6 +132,12 @@
                 label="Certificate Control Number"
                 requiredMark
                 class="w-full mb-2"
+                />
+
+                <VaSelect
+                v-model="editService.data.certificate_status"
+                :options="options"
+                placeholder="Status"
                 />
 
 
@@ -192,6 +199,11 @@ export default {
             services: [],
             service: null,
             list: [],
+            options: [
+                "Pending",
+                "Unreleased",
+                "Released",
+            ],
             editService: {
                 modal: false,
                 isEditLoading: false,

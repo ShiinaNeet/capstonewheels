@@ -52,6 +52,7 @@ class ReportController extends Controller
             ->addSelect(DB::raw("enrollments.ltms AS LTMS"))
             ->addSelect(DB::raw("enrollments.aces AS ACES"))
             ->addSelect(DB::raw("enrollments.ccm AS CCM"))
+            ->addSelect(DB::raw("enrollments.certificate_status"))
             ->where('service_schedules.day_of_week', '>=', $start)
             ->where('service_schedules.day_of_week', '<=', $end)
             ->where('enrollments.service_id', $request->service)
@@ -236,6 +237,7 @@ class ReportController extends Controller
         $ltmsdate = $form->ltms;
         $acesdate = $form->aces;
         $ccm = $form->ccm;
+        $status = $form->certificate_status;
         //dd(date('Y-m-d', strtotime($ltmsdate)));
         //dd($form);
 
@@ -245,6 +247,7 @@ class ReportController extends Controller
             'ltms' => date('m/d/Y', strtotime($ltmsdate)),
             'aces' => date('m/d/Y', strtotime($acesdate)),
             'ccm' => $ccm,
+            'certificate_status' => $status,
         ]);
 
         return response()->json($rs);
