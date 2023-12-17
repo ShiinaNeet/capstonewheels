@@ -62,20 +62,8 @@
                     <pre>SYSTEM GENERATED</pre>
                 </p>
             </template>
-            <template #cell(action_description)="{ row, isExpanded }">
-                <va-button
-                class="w-full"
-                preset="secondary"
-                size="small"
-                :icon="isExpanded ? 'va-arrow-up': 'va-arrow-down'"
-                @click="row.toggleRowDetails(), activePreviewRow = row"
-                >
-                    {{ !isExpanded ? 'Show': 'Hide' }}
-                </va-button>
-            </template>
-            <template #expandableRow="{ rowData }">
+            <template #cell(action_description)="{ rowData }">
                 <div
-                class="p-2"
                 id="table-row-desc"
                 >
                     <va-input
@@ -88,6 +76,7 @@
                     />
                 </div>
             </template>
+           
             <template #cell(action_type)="{ value }">
                 <va-badge
 
@@ -145,11 +134,11 @@ export default {
     data () {
         const auds = {
             tblColumns: [
-                { key: "category", label: "Audit", width: 100, sortable: true },
-                { key: "email", label: "Account", width: "100%", sortable: true },
-                { key: "action_type", label: "Action", width: 50, sortable: true },
-                { key: "action_description", label: "Description", width: 80, tdAlign: "center", sortable: false },
-                { key: "created_at", label: "Created On", sortable: true }
+                { key: "category", label: "Audit", width: "5%", sortable: true },
+                { key: "email", label: "Account", width: "10%", sortable: true },
+                { key: "action_type", label: "Action", width: "5%", sortable: true },
+                { key: "action_description", label: "Description", width: "60%", sortable: false },
+                { key: "created_at", label: "Created On",width: "20%", sortable: true }
             ],
             auditCategory: [
                 { label: "Account", value: 0 },
