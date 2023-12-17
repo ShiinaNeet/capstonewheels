@@ -58,6 +58,9 @@
         animated
         striped
         >
+            <template #cell(enrollment_id)="{ rowData }">
+                {{ rowData.enrollment_id }}
+            </template>
             <template #cell(gender)="{ value }">
                 {{ value == 1 ? "Male" : "Female" }}
             </template>
@@ -84,6 +87,9 @@
                     </td>
                 </tr>
             </template>
+            <template #cell(certificate_status)="{ rowData }">
+                {{ rowData.certificate_status }}
+            </template>
             <template #cell(id)="{ rowData }">
                 <va-button
                 class="mb-2 mr-2 hover:opacity-[0.65!important]"
@@ -106,8 +112,35 @@
         <template #content>
             <div class="w-[410px] p-5">
                 <div class="va-title mb-3">
-                    Edit service
+                    Update LTO Data
                 </div>
+
+                <va-date-input
+                v-model="editService.data.ltms"
+                requiredMark
+                label="LTMS"
+                />
+
+                <va-date-input
+                v-model="editService.data.aces"
+                requiredMark
+                label="ACES"
+                />
+
+                <va-input
+                v-model="editService.data.ccm"
+                label="Certificate Control Number"
+                requiredMark
+                class="w-full mb-2"
+                />
+
+                <VaSelect
+                v-model="editService.data.certificate_status"
+                :options="options"
+                placeholder="Status"
+                />
+
+
                 <div class="flex w-full gap-x-3 mt-[15px]">
                     <div class="flex w-1/2 justify-between">
                         <va-button
@@ -120,7 +153,7 @@
                         <va-button
                         icon="save"
 
-                        @click="SaveFunctionhere"
+                        @click="editService.saved = true, insertUpdateService('save'), editService.isEditLoading = true, editService.modal = false"
                         >
                             <p class="font-normal">Save</p>
                         </va-button>
@@ -140,12 +173,14 @@ export default {
     data () {
         const record = {
             tblColumns: [
+                { key: "enrollment_id", label: "EnrollmentID", sortable: true },
                 { key: "student_name", label: "Student", sortable: true },
                 { key: "gender", label: "Gender", sortable: true },
                 { key: "hours", label: "Hours", sortable: true },
                 { key: "transmission", label: "Clutch", sortable: true },
                 { key: "date_start", label: "Attendance", sortable: true },
                 { key: "instructor", label: "Instructor", sortable: true },
+                { key: "certificate_status", label: "Certificate Status", sortable: true },
                 { key: "id", label: "Action", width: 60, sortable: false }
             ],
         };
@@ -164,8 +199,14 @@ export default {
             services: [],
             service: null,
             list: [],
+            options: [
+                "Pending",
+                "Unreleased",
+                "Released",
+            ],
             editService: {
                 modal: false,
+                isEditLoading: false,
                 deleteModal: false,
                 price: {
                     err: 0,
@@ -234,6 +275,41 @@ export default {
             }).catch(error => {
                 this.$root.prompt(error.response.data.message);
             });
+        },
+        insertUpdateService(method) {
+            if (method !== 'create' || method !== 'save') {
+                let fdata;
+                fdata = this.editService.data
+                const data = new FormData();
+                data.append('form', JSON.stringify(fdata));
+                axios({
+                    method: 'POST',
+                    type: 'JSON',
+                    url: '/report/update',
+                    data: data,
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                }).then(response => {
+                    if (response.data.status == 1) {
+                        this.$root.prompt(response.data.text);
+                        method === 'create' ? (
+                            this.createService.data = { ...newServ },
+                            this.createService.modal = false,
+                            this.createService.saved = false
+                        )
+                        : (method === 'save' && (
+                                this.editService.data = { ...newServ },
+                                this.editService.modal = false,
+                                this.editService.saved = false
+                            )
+                        );
+                        this.editService.isEditLoading = false;
+                        this.getServices();
+                    } else this.$root.prompt(response.data.text);
+                }).catch(error => {
+                    this.$root.prompt(error.response.data.message);
+                    this.editService.isEditLoading = false;
+                });
+            } else this.$root.prompt();
         },
         getServices() {
             axios({

@@ -55,6 +55,7 @@
             @if (!$exclude_columns)
             <th colspan="2" style="{{ $pdf ? "$cell_b $brdr_t font-weight: 400;" : "" }} {{ $tx_c }}">Date Printed of Certificates</th>
             <th style="{{ $pdf ? "$cell_b $brdr_t font-weight: 400;" : "" }} {{ $tx_c }}">Certificate Control</th>
+            <th style="{{ $pdf ? "$cell_b $brdr_t font-weight: 400;" : "" }} {{ $tx_c }}">Certificate</th>
             @endif
             <th rowspan="2" style="{{ $pdf ? "$cell_b $brdr_t" : "" }} {{ $brdr_b }} {{ $tx_c }} {{ $w_25 }}">Instructor</th>
         </tr>
@@ -68,6 +69,7 @@
             <th style="{{ $pdf ? "$cell_b $brdr_t" : "" }} {{ $brdr_b }} {{ $tx_c }} {{ $w_10 }}">LTMS</th>
             <th style="{{ $pdf ? "$cell_b $brdr_t" : "" }} {{ $brdr_b }} {{ $tx_c }} {{ $w_10 }}">ACES</th>
             <th style="{{ $pdf ? "$cell_b $brdr_t" : "" }} {{ $brdr_b }} {{ $tx_c }} {{ $w_25 }}">Number</th>
+            <th style="{{ $pdf ? "$cell_b $brdr_t" : "" }} {{ $brdr_b }} {{ $tx_c }} {{ $w_10 }}">Status</th>
             @endif
         </tr>
     </thead>
@@ -85,9 +87,10 @@
             <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ date('m/d/Y', strtotime($row['date_start'])) }}</td>
             <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ date('m/d/Y', strtotime($row['date_end'])) }}</td>
             @if (!$exclude_columns)
-            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ date('m/d/Y', strtotime($row['LTMS'])) }}</td>
-            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ date('m/d/Y', strtotime($row['ACES'])) }}</td>
-            <td style="{{ $pdf ? "$cell_c" : "" }}"></td>
+            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['LTMS'] }}</td>
+            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['ACES'] }}</td>
+            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['CCM'] }}</td>
+            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['certificate_status'] }}</td>
             @endif
             <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['instructor'] }}</td>
         </tr>

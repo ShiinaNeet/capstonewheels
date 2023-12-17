@@ -41,6 +41,7 @@ class ReportController extends Controller
             ->leftJoin('vehicles', 'services.vehicle_id', '=', 'vehicles.id')
             ->rightJoin('user_details as instruc', 'service_schedules.instructor_id', '=', 'instruc.user_id')
             ->select(DB::raw("CONCAT(student.lastname, ', ', student.firstname) AS student_name"))
+            ->addSelect('enrollments.id as enrollment_id')
             ->addSelect('student.lastname', 'student.firstname', 'student.middlename')
             ->addSelect('student.gender', 'student.birthdate')
             ->addSelect(DB::raw("CONCAT(instruc.lastname, ', ', instruc.firstname) AS instructor"))
@@ -48,8 +49,10 @@ class ReportController extends Controller
             ->addSelect(DB::raw("vehicles.transmission"))
             ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS date_start"))
             ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS date_end"))
-            ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS LTMS"))
-            ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS ACES"))
+            ->addSelect(DB::raw("enrollments.ltms AS LTMS"))
+            ->addSelect(DB::raw("enrollments.aces AS ACES"))
+            ->addSelect(DB::raw("enrollments.ccm AS CCM"))
+            ->addSelect(DB::raw("enrollments.certificate_status"))
             ->where('service_schedules.day_of_week', '>=', $start)
             ->where('service_schedules.day_of_week', '<=', $end)
             ->where('enrollments.service_id', $request->service)
@@ -225,6 +228,28 @@ class ReportController extends Controller
             ->get()->toArray();
         $rs = SharedFunctions::success_msg('Success');
         $rs['result'] = $query;
+        return response()->json($rs);
+    }
+
+    public function update(Request $request){
+        $rs = SharedFunctions::success_msg("Update Successfully");
+        $form = new Request(json_decode($request->form, true));
+        $ltmsdate = $form->ltms;
+        $acesdate = $form->aces;
+        $ccm = $form->ccm;
+        $status = $form->certificate_status;
+        //dd(date('Y-m-d', strtotime($ltmsdate)));
+        //dd($form);
+
+        DB::table('enrollments')
+        ->where('id', $form->enrollment_id)
+        ->update([
+            'ltms' => date('m/d/Y', strtotime($ltmsdate)),
+            'aces' => date('m/d/Y', strtotime($acesdate)),
+            'ccm' => $ccm,
+            'certificate_status' => $status,
+        ]);
+
         return response()->json($rs);
     }
 }
