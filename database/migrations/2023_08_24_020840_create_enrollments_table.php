@@ -17,6 +17,10 @@ return new class extends Migration
             $table->integer('student_id')->comment('PK id from users table')->unsigned();
             $table->integer('batch')->default(0);
             $table->tinyInteger('status')->comment('0 = cancelled, 1 = active, 2 = finished, 3 = pending')->default(0);
+            // di ako nagamit ng migration, kaya paset nlang as null, if kaya mo
+            $table->string('ltms');
+            $table->string('aces');
+            $table->string('ccm');
             $table->timestamps();
 
             $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');

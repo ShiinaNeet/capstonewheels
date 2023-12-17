@@ -49,8 +49,9 @@ class ReportController extends Controller
             ->addSelect(DB::raw("vehicles.transmission"))
             ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS date_start"))
             ->addSelect(DB::raw("MAX(service_schedules.day_of_week) AS date_end"))
-            ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS LTMS"))
-            ->addSelect(DB::raw("MIN(service_schedules.day_of_week) AS ACES"))
+            ->addSelect(DB::raw("enrollments.ltms AS LTMS"))
+            ->addSelect(DB::raw("enrollments.aces AS ACES"))
+            ->addSelect(DB::raw("enrollments.ccm AS CCM"))
             ->where('service_schedules.day_of_week', '>=', $start)
             ->where('service_schedules.day_of_week', '<=', $end)
             ->where('enrollments.service_id', $request->service)
@@ -233,8 +234,19 @@ class ReportController extends Controller
         $rs = SharedFunctions::success_msg("Update Successfully");
         $form = new Request(json_decode($request->form, true));
         $ltmsdate = $form->ltms;
+        $acesdate = $form->aces;
+        $ccm = $form->ccm;
         //dd(date('Y-m-d', strtotime($ltmsdate)));
-        dd($form);
+        //dd($form);
+
+        DB::table('enrollments')
+        ->where('id', $form->enrollment_id)
+        ->update([
+            'ltms' => date('m/d/Y', strtotime($ltmsdate)),
+            'aces' => date('m/d/Y', strtotime($acesdate)),
+            'ccm' => $ccm,
+        ]);
+
         return response()->json($rs);
     }
 }

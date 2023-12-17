@@ -85,9 +85,9 @@
             <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ date('m/d/Y', strtotime($row['date_start'])) }}</td>
             <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ date('m/d/Y', strtotime($row['date_end'])) }}</td>
             @if (!$exclude_columns)
-            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ date('m/d/Y', strtotime($row['LTMS'])) }}</td>
-            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ date('m/d/Y', strtotime($row['ACES'])) }}</td>
-            <td style="{{ $pdf ? "$cell_c" : "" }}"></td>
+            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['LTMS'] }}</td>
+            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['ACES'] }}</td>
+            <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['CCM'] }}</td>
             @endif
             <td style="{{ $pdf ? "$cell_c" : "" }} {{ $tx_c }}">{{ $row['instructor'] }}</td>
         </tr>
