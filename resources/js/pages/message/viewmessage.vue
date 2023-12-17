@@ -1,7 +1,7 @@
 <template #content>
     <div class="MessageView pb-5 w-[500px] h-[250px]">
         
-        <div class="text-xl mb-2"><h1>Message from {{ message.sender_email }}</h1></div>
+        <div class="text-xl mb-2"><h1>Message from {{ message.name }}</h1></div>
         <va-card
         class="h-full"
         stripe

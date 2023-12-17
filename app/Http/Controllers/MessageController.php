@@ -6,6 +6,7 @@ use App\Libraries\SharedFunctions;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
@@ -29,7 +30,9 @@ class MessageController extends Controller
     public function get(Request $request)
     {
         $messages = Message::leftJoin('users', 'messages.sender_id', '=', 'users.id')
+            ->leftJoin('user_details', 'users.id', '=', 'user_details.user_id')
             ->select('messages.*', 'users.email as sender_email')
+            ->addSelect(DB::raw("CONCAT(user_details.firstname,' ', user_details.lastname ) as name"))
             ->where('messages.recipient_id', Auth::id())
             ->get();
         // get user name with this query messages of 'sender_id'

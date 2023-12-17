@@ -73,6 +73,7 @@ Route::group(['middleware' => 'check_auth'], function () {
     Route::get('/requirements', [RequirementController::class, 'get']);
     Route::get('/rooms', [RoomController::class, 'get']);
     Route::get('/staffs', [AccountController::class, 'get_staffs']);
+    Route::get('/students', [AccountController::class, 'get_students']);
     Route::get('/service/schedule/service_batches', [ServiceController::class, 'get_service_batches']);
     Route::get('/services/available', [ServiceController::class, 'get_available_services']);
     Route::get('/services/sort/{sort_by}', [ServiceController::class, 'get']);
