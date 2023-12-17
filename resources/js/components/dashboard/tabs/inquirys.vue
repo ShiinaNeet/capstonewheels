@@ -91,7 +91,17 @@
             <template #cell(created_at)="{ value }">
                 {{ formatDate(value, 'MMM. Do YYYY', 'Invalid Date') }}
             </template>
-
+            <template #cell(action)="{ rowData }">
+                <va-button
+                class="mb-2 mr-2 hover:opacity-[0.65!important]"
+                title="Delete"
+                preset="plain"
+                icon="delete"
+                @click="
+                    editInquiry.data = { ...rowData },
+                    editInquiry.modal = true
+                "/>
+            </template>
             <template #bodyAppend>
                 <tr v-if="$root.tblPagination(inquiry.submitted.items)">
                     <td
@@ -111,7 +121,46 @@
             </template>
         </va-data-table>
     </div>
-
+    <va-modal
+    v-model="editInquiry.modal"
+    @cancel="editInquiry.data = {},editInquiry.modal = false"
+    noPadding
+    >
+        <template #content>
+            <div class="w-[410px] p-5">
+                <div class="va-title mb-3">
+                    Delete Inquiry?
+                </div>
+                <va-alert color="warning">
+                    <template #icon>
+                        <va-icon name="warning" />
+                    </template>
+                    This action is irreversible
+                </va-alert>
+                <div class="flex w-full gap-x-3 mt-[15px]">
+                    <div class="flex w-1/2 justify-between">
+                        <va-button
+                        preset="secondary"
+                        @click="editInquiry.data = { ...resetData },
+                            editInquiry.modal = false, 
+                            editInquiry.saved = false
+                            ">
+                            <p class="font-normal">Cancel</p>
+                        </va-button>
+                    </div>
+                    <div class="flex w-1/2 justify-between">
+                        <va-button
+                        icon="delete"
+                        :loading="editInquiry.saved"
+                        @click="editInquiry.saved = true,deleteInquiry()"
+                        >
+                           Delete
+                        </va-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </va-modal>
 </template>
 
 <script>
@@ -125,9 +174,10 @@ export default {
                 { key: "email", label: "E-mail", width: 200, sortable: true },
                 { key: "inquiry", label: "Inquiry", width: 80, tdAlign: "center", sortable: false },
                 { key: "created_at", label: "Submitted On", width: 125, sortable: true },
+                { key: "action", label: "action", width: 125, sortable: false },
             ],
         };
-
+        const resetInquiry = { };
         return {
             inquiry: {
                 submitted: {
@@ -139,6 +189,13 @@ export default {
                     items: [],
                     activePreviewRow: null,
                 },
+            },
+            editInquiry:{
+                modal:false,
+                isLoading: false,
+                saved: false,
+                data: {...resetInquiry},
+                resetData: { ...resetInquiry },
             },
             filtered: null,
             filter: "",
@@ -170,6 +227,25 @@ export default {
                 } else this.$root.prompt(response.data.text);
             }).catch(error => {
                 this.$root.prompt(error.response.data.message);
+            });
+        },
+        deleteInquiry() {
+            axios({
+                method: 'POST',
+                type: 'JSON',
+                url: '/inquiry/delete',
+                data: this.editInquiry.data 
+            }).then(response => {
+                if (response.data.status == 1) {
+                    this.$root.prompt(response.data.text);
+                    this.editInquiry.saved = false;
+                    this.editInquiry.modal = false;
+                    this.editInquiry.resetData = {...this.resetInquiry}
+                    this.getInquiries();
+                } else this.$root.prompt(response.data.text);
+            }).catch(error => {
+                this.$root.prompt(error.response.data.message);
+                this.editInquiry.saved = false;
             });
         },
         formatDate

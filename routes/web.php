@@ -154,6 +154,7 @@ Route::group(['middleware' => 'check_auth'], function () {
 });
 
 Route::post('/inquiry/save', [InquiryController::class, 'save']);
+Route::post('/inquiry/delete', [InquiryController::class, 'delete']);
 Route::post('/login', [AccountController::class, 'login']);
 Route::post('/news/active', [NewsController::class, 'get_active']);
 Route::post('/password', [AccountController::class, 'get_password']);
