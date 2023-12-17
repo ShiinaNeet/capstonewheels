@@ -180,26 +180,37 @@
                         </div>
                         <template v-for="(row, i) in notifications" :key="i">
                             <va-divider />
-                            <div 
-                                class="max-w-xs p-0.5 text-neutral-500 flex"
+                            <div class="flex columns-2 w-[330px]">
+                                <div 
+                                class="notification-item max-w-xs max-h-xs h-fit m-0 p-0 text-neutral-500 flex w-11/12"
                                 :style="{ backgroundColor: row.read_at == null ? '#D0E1D4' : '', 'font-weight': row.read_at == null ? 'bold' : 'normal' }"
-                                @click="readSingleNotifications(row.id)"
-                            >
-                                <div>
+                                >
+                                <div @click="readSingleNotifications(row.id)">
                                     <p>
-                                        <va-icon
+                                    <va-icon
                                         class="mr-1 mb-1"
                                         :name="row.icon"
                                         size="small"
-                                        
-                                        />
-                                        {{ row.title }}<br/>
-                                        <span class="text-xs">{{ row.description }}</span>
-                                        <br/>
+                                    />
+                                    {{ row.title }}<br/>
+                                    <span class="text-xs text-justify w-10/12">{{ row.description }}</span>
+                                    <br/>
                                     </p>
+                                </div>
+                                <div 
+                                    class="text-neutral-500 place-self-center delete-button w-1/12 ml-1" 
+                                    :style="{ backgroundColor: row.read_at == null ? '#D0E1D4' : '', 'font-weight': row.read_at == null ? 'bold' : 'normal' }"
+                                    @click="deleteSingleNotifications(row.id)"
+                                >
+                                    <VaIcon
+                                    class="m-2"
+                                    name="delete"
+                                    color="Transparent"
+                                    />
                                 </div>   
+                                </div>
                             </div>
-                        </template>
+                            </template>
                         <template v-if="notifications.length == 0">
                             <va-divider />
                             <div class="max-w-xs p-0.5 text-neutral-500">
@@ -576,6 +587,22 @@
 /* #inquiry-btn .va-button {
     box-shadow: 0 3px #CCCCCC!important;
 } */
+.notification-item {
+  position: relative;
+}
+
+.delete-button {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  cursor: pointer;
+  display: none;
+}
+
+.notification-item:hover .delete-button {
+  display: block;
+}
 </style>
 
 <script>
@@ -778,6 +805,23 @@ export default {
                 method: 'POST',
                 type: 'JSON',
                 url: '/notifications/single_read',
+                data: { id: this.notification.id },
+            }).then(response => {
+                if (response.data.status == 1) {
+                    this.getNotifications();
+                } else this.$root.prompt(response.data.text);
+                
+            }).catch(error => {
+                this.$root.prompt(error.response.data.message);
+              
+            });
+        },
+        deleteSingleNotifications(id) {
+            this.notification.id = id;
+            axios({
+                method: 'POST',
+                type: 'JSON',
+                url: '/notifications/delete',
                 data: { id: this.notification.id },
             }).then(response => {
                 if (response.data.status == 1) {
