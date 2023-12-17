@@ -73,6 +73,17 @@
             maxlength="3000"
             />
         </div>
+        <div class="paymongoterm mb-2 pr-5">
+            <va-input
+            type="textarea"
+            class="w-full"
+            v-model="companyDetails.data.paymongo_terms"
+            label="Terms and Conditions for paymongo"
+            :min-rows="10"
+            :max-rows="10"
+            outline
+            />
+        </div>
         <div>
             <va-button
             :loading="companyDetails.isButtonLoading"
@@ -94,6 +105,7 @@ const newCompanyDetails = {
     email: '',
     business_hours: '',
     terms:'',
+    paymongo_terms: '',
     id:1,
 };
 export default {
