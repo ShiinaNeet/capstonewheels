@@ -119,6 +119,7 @@
                 title="Delete"
                 preset="plain"
                 icon="delete"
+                :disabled="rowData.deleted_at"
                 @click="editEvent.data = { ...rowData }, editEvent.deleteModal = !editEvent.deleteModal"
                 />
             </template>
@@ -442,8 +443,8 @@ export default {
     data () {
         const news = {
             tblColumns: [
-                { key: "title", label: "News", sortable: true },
-                { key: "deleted_at", label: "Status", width: 50, sortable: false },
+                { key: "title", label: "News",width: "100%", sortable: true },
+                { key: "deleted_at", label: "Status", width: 90, sortable: false },
                 { key: "description", label: "Description", width: 80, tdAlign: "center", sortable: false },
                 { key: "created_at", label: "Created On", width: 125, sortable: true },
                 { key: "id", label: "Action", width: 60, sortable: false }
