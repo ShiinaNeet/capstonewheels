@@ -291,15 +291,47 @@ class ServiceController extends Controller
             ->orderBy('payments.created_at', 'DESC')
             ->where('payments.status', Payment::STATUS_PENDING)
             ->get()->map($payment_item);
-        $verified = Payment::leftJoin('users', 'payments.student_id', '=', 'users.id')
-            ->leftJoin('user_details', 'payments.student_id', '=', 'user_details.user_id')
-            ->select('payments.id', 'payments.reference_no', 'payments.mode_of_payment', 'payments.created_at')
+        // $verified = Payment::leftJoin('users', 'payments.student_id', '=', 'users.id')
+        //     ->leftJoin('user_details', 'payments.student_id', '=', 'user_details.user_id')
+        //     ->select('payments.id', 'payments.reference_no', 'payments.mode_of_payment', 'payments.created_at')
+        //     ->addSelect('user_details.firstname', 'user_details.middlename', 'user_details.lastname', 'user_details.gender')
+        //     ->addSelect('user_details.address', 'user_details.barangay', 'user_details.city', 'user_details.province', 'user_details.birthdate')
+        //     ->addSelect('user_details.mobile', 'users.email', 'users.id as user_id')
+        //     ->orderBy('payments.created_at', 'DESC')
+        //     ->where('payments.status', Payment::STATUS_VERIFIED)
+        //     ->where('')
+        //     ->get()->map($payment_item);
+        $verified = Enrollment::join('users', 'enrollments.student_id', '=', 'users.id')
+            ->leftJoin('user_details', 'users.id', '=', 'user_details.user_id')
+            ->leftJoin('payments', 'enrollments.student_id', '=', 'payments.student_id')
+            ->leftJoin('services', 'enrollments.service_id','=','services.id')
+            ->leftJoin('payment_items', 'enrollments.id','=','payment_items.enrollment_id')
+            ->leftJoin('service_schedules', function ($join) {
+                $join->on('services.id', '=', 'service_schedules.service_id')
+                    ->on('enrollments.batch', '=', 'service_schedules.batch');
+                })
+            ->select(
+                'payments.id',
+                'payments.reference_no',
+                'payments.mode_of_payment',
+                'payments.created_at',
+                'user_details.mobile',
+                'users.email',
+                'users.id as user_id',
+                'user_details.firstname',
+                'user_details.middlename',
+                'user_details.lastname'
+            )
+            ->addSelect('service_schedules.day_of_week', 'service_schedules.time_start', 'service_schedules.time_end')
             ->addSelect('user_details.firstname', 'user_details.middlename', 'user_details.lastname', 'user_details.gender')
             ->addSelect('user_details.address', 'user_details.barangay', 'user_details.city', 'user_details.province', 'user_details.birthdate')
             ->addSelect('user_details.mobile', 'users.email', 'users.id as user_id')
-            ->orderBy('payments.created_at', 'DESC')
+            ->where('enrollments.status', Enrollment::STATUS_ACTIVE)
             ->where('payments.status', Payment::STATUS_VERIFIED)
-            ->get()->map($payment_item);
+            ->where('service_schedules.status', '=', ServiceSchedule::STATUS_ACTIVE)
+            ->orderBy('payments.created_at', 'DESC')
+            ->get()
+            ->map($payment_item);
         $cancelledEnrollments = Enrollment::join('users', 'enrollments.student_id', '=', 'users.id')
             ->leftJoin('user_details', 'users.id', '=', 'user_details.user_id')
             ->leftJoin('payments', 'enrollments.student_id', '=', 'payments.student_id')
