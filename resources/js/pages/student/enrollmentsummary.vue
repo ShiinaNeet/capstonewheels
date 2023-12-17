@@ -217,7 +217,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div v-if="cservs.length">
+                                        <div v-if="cservs.length" hidden>
                                             <va-divider class="mb-4" orientation="left">
                                                 <span class="mx-2">Requirements</span>
                                             </va-divider>

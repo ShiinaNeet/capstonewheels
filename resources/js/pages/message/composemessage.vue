@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="flex flex-col w-[500px] h-fit">
-            <div>
+            <div v-if="$root.auth.userType == 0">
                 <h1 class="pb-2 text-lg">Send to</h1>
                 <va-select
                 v-model="message.recipient_id"
@@ -10,6 +10,18 @@
                 :options="staff.result"
                 outline
                 text-by="email"
+                value-by="id"
+                />
+            </div>
+            <div v-if="$root.auth.userType != 0">
+                <h1 class="pb-2 text-lg">Send to</h1>
+                <va-select
+                v-model="message.recipient_id"
+                class="mb-2 w-full"
+                label="students"
+                :options="student.result"
+                outline
+                text-by="name"
                 value-by="id"
                 />
             </div>
@@ -80,6 +92,12 @@ export default {
                 text: "Success.",
                 result: []
             },
+            student: {
+                status: 1,
+                title: "Success!",
+                text: "Success.",
+                result: []
+            },
             message: {
                 sender_id: this.$root.auth.info.user_id,
                 recipient_id: null,
@@ -91,6 +109,7 @@ export default {
     },
     mounted() {
         this.getStaff();
+        this.getStudents();
     },
     methods: {
         sendMessage() {
@@ -133,7 +152,26 @@ export default {
                 this.$root.prompt(error.response.data.message);
                 this.isComposeLoading = false;
             });
-        }
+        },
+        getStudents() {
+            this.isComposeLoading = true;
+            axios({
+                method: 'GET',
+                type: 'JSON',
+                url: '/students'
+            }).then(response => {
+                if (response.data.status == 1) {
+                    this.student.result = response.data.result;
+                    console.log(this.staff.result);
+                    this.message.sender_id = this.$root.auth.info.user_id;
+                } else this.$root.prompt(response.data.text);
+                this.isComposeLoading = false;
+            }).catch(error => {
+                this.$root.prompt(error.response.data.message);
+                this.isComposeLoading = false;
+            });
+        },
+
     },
 };
 </script>

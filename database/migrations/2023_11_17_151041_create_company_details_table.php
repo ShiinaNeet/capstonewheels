@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('business_hours');
             $table->text('terms');
+            $table->text('paymongo_terms');
             $table->timestamps();
         });
     }

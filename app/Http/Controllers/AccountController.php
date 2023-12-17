@@ -517,6 +517,19 @@ class AccountController extends Controller
         return response()->json($rs);
     }
 
+    public function get_students()
+    {
+        $accounts = User::where('user_type', '==', 0)
+            ->leftJoin('user_details', 'users.id', '=', 'user_details.user_id')
+            ->select('users.*')
+            ->addSelect(DB::raw("CONCAT(user_details.firstname,' ', user_details.lastname ) as name"))
+            ->orderBy('users.created_at', 'DESC')
+            ->get();
+        $rs = SharedFunctions::success_msg('Success.');
+        $rs['result'] = $accounts;
+        return response()->json($rs);
+    }
+
     public function get_password(Request $request)
     {
         $rs = SharedFunctions::default_msg();

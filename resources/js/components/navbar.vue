@@ -244,7 +244,7 @@
                             <va-divider />
                             <div class="max-w-xs p-0.5 text-neutral-500" @click="OpenMessageModal(row)">
                                 <p>
-                                    {{ row.sender_email }}<br/>
+                                    {{ row.name }}<br/>
                                     <span class="text-xs">{{ row.subject }}</span>
                                 </p>
                             </div>
@@ -522,6 +522,7 @@
                     :senderSubject="message.subject"
                     :senderContent="message.content"
                     :senderDate="message.created_at"
+                    :senderName="message.name"
                     @close-modal="handleReplyModalClose()"
                     @message-sent="handleReplyModalClose()"
                     @message-cancelled="handleReplyModalClose()"

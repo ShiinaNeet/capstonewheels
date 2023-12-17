@@ -15,6 +15,7 @@ class InquiryController extends Controller
     {
         $query = Inquiry::leftJoin('users', 'inquiries.student_id', '=', 'users.id')
             ->selectRaw('COALESCE(users.email, inquiries.email) as email')
+            ->addSelect('inquiries.id as id')
             ->addSelect('inquiries.subject', 'inquiries.inquiry', 'inquiries.deleted_at', 'inquiries.created_at')
             ->orderBy('inquiries.created_at', 'DESC')
             ->get();
@@ -66,6 +67,19 @@ class InquiryController extends Controller
                 AuditTrail::CATEGORY_INQUIRY,
                 $new_inquiry ? AuditTrail::ACTION_CREATE : AuditTrail::ACTION_UPDATE,
                 "Inquiry " . $request->subject . " submitted by " . $userEmail
+            );
+        }
+        return response()->json($rs);
+    }
+
+    public function delete(Request $request)
+    {
+        $rs = SharedFunctions::default_msg();
+        $query = Inquiry::find($request->id);
+        if ($query->forceDelete()) {
+            $rs = SharedFunctions::success_msg("Inquiry deleted");
+            SharedFunctions::create_audit_log(
+                AuditTrail::CATEGORY_HELP, AuditTrail::ACTION_DELETE, "Inquiry " . $query->question . " deleted"
             );
         }
         return response()->json($rs);

@@ -15,7 +15,7 @@
                         color="primary"
                         gradient
                         >
-                            <va-card-title>{{ senderEmail }}</va-card-title>
+                            <va-card-title>{{ senderName }}<br/> {{ senderEmail }}</va-card-title>
                             <va-card-content>
                                <p class="font-bold"> Subject: {{  message.subject}}</p>
                                <p class="font-bold"> Date: {{ formatMessageDate(senderDate) }}</p>
@@ -72,6 +72,7 @@ export default {
                 recipient_id: this.senderId,
                 subject: this.senderSubject,
                 content: '',
+                name: this.senderName,
                 saved: false
             }
         };
@@ -94,6 +95,10 @@ export default {
             required: true
         },
         senderDate: {
+            type: String,
+            required: true
+        },
+        senderName: {
             type: String,
             required: true
         }

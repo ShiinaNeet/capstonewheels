@@ -18,6 +18,7 @@ class CompanyDetailsController extends Controller
             'email' => 'required|max:120|regex:/(.+)@(.+)\.(.+)/i',
             'business_hours' => 'required',
             'terms' => 'required',
+            'paymongo_terms' => 'required'
         ]);
 
         $companyDetails = CompanyDetails::findOrNew(1);
@@ -28,6 +29,7 @@ class CompanyDetailsController extends Controller
         $companyDetails->email = $request->email;
         $companyDetails->business_hours = $request->business_hours;
         $companyDetails->terms = $request->terms;
+        $companyDetails->paymongo_terms = $request->paymongo_terms;
         $companyDetails->save();
 
         $rs = SharedFunctions::success_msg("Company details saved");
