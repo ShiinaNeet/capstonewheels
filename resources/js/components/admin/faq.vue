@@ -98,6 +98,7 @@
                 title="Delete"
                 preset="plain"
                 icon="delete"
+                :disabled="rowData.deleted_at"
                 @click="editHelp.data = { ...rowData }, editHelp.deleteModal = !editHelp.deleteModal"
                 />
             </template>
@@ -371,7 +372,7 @@ export default {
     data () {
         const faq = {
             tblColumns: [
-                { key: "question", label: "Frequently asked Question", width: 90, sortable: true },
+                { key: "question", label: "Frequently asked Question", width: "100%", sortable: true },
                 { key: "deleted_at", label: "Status", width: 90, sortable: false },
                 { key: "answer", label: "Answer", width: 80, tdAlign: "center", sortable: false },
                 { key: "created_at", label: "Created On", width: 125, sortable: true },
