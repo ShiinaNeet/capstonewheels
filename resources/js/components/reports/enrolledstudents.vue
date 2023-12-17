@@ -92,6 +92,7 @@
             </template>
             <template #cell(id)="{ rowData }">
                 <va-button
+                v-if="mode === 0"
                 class="mb-2 mr-2 hover:opacity-[0.65!important]"
                 title="Edit"
                 preset="plain"
