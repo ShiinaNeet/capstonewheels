@@ -16,6 +16,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\CompanyDetailsController;
+use App\http\Controllers\HelpController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,6 +34,7 @@ Route::get('/', [PageController::class, 'index']);
 Route::get('/logout', [AccountController::class, 'logout']);
 Route::get('/aboutus', [PageController::class, 'aboutus']);
 Route::get('/contactus', [PageController::class, 'contactus']);
+Route::get('/help', [PageController::class, 'help']);
 Route::get('/company', [CompanyDetailsController::class, 'get']);
 Route::get('/news/sort/{sort_by}', [NewsController::class, 'get']);
 Route::get('/newsevent', [PageController::class, 'newsevent']);
@@ -66,6 +68,7 @@ Route::group(['middleware' => 'check_auth'], function () {
     Route::get('/get_enrolled_students_for_admin', [AccountController::class, 'get_enrolled_students_for_admin']);
     Route::get('/get_enrollments', [ServiceController::class, 'get_enrollments']);
     Route::get('/get_inquiries', [InquiryController::class, 'get']);
+    Route::get('/help/sort/{sort_by}', [HelpController::class, 'get_sorted']);
     Route::get('/instructors', [AccountController::class, 'get_instructors']);
     Route::get('/notifications/read', [NotificationController::class, 'mark_as_read']);
     Route::get('/faq', [PageController::class, 'faq']);
@@ -95,6 +98,13 @@ Route::group(['middleware' => 'check_auth'], function () {
         Route::post('disable', [FaqController::class, 'disable']);
         Route::post('save', [FaqController::class, 'save']);
         Route::post('enable', [FaqController::class, 'enable']);
+    });
+    Route::prefix('help')->group(function () {
+        Route::post('delete', [HelpController::class, 'delete']);
+        Route::post('disable', [HelpController::class, 'disable']);
+        Route::post('save', [HelpController::class, 'save']);
+        Route::post('enable', [HelpController::class, 'enable']);
+        Route::get('get', [HelpController::class, 'get']);
     });
     Route::prefix('messages')->group(function () {
         Route::post('delete', [MessageController::class, 'delete']);

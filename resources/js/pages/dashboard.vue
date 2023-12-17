@@ -250,6 +250,9 @@
                     <template v-if="activeSetting === 'Company Details'">
                         <companydetails/>
                     </template>
+                    <template v-if="activeSetting === 'Help'">
+                        <help />
+                    </template>
                 </div>
             </div>
         </div>
@@ -291,12 +294,12 @@ import room_tbl from '@/components/admin/rooms.vue';
 import service_tbl from '@/components/admin/services.vue';
 import schedule_tbl from '@/components/admin/schedules.vue';
 import vehicle_tbl from '@/components/admin/vehicles.vue';
-
+import help_tbl from '@/components/admin/help.vue';
 export default {
     data () {
         return {
             dashboard: ['Dashboard'],
-            media_mngt: ['News', 'FAQ', 'Company Details'],
+            media_mngt: ['News', 'FAQ', 'Company Details','Help'],
             enrol_mngt: ['Schedule', 'Service', 'Requirement', 'Room', 'Vehicle'],
             reprt_mngt: ['LTO Enrolled Students', 'Cancelled Enrollments', 'Income'],
             bckup_mngt: ['User Management','Database Import', 'Database Export', 'Audit Log', ],
@@ -310,6 +313,7 @@ export default {
         audits: auditlogs_tbl,
         faq: faq_tbl,
         news: news_tbl,
+        help: help_tbl,
         enrstudrep: enrstudrep_tbl,
         incomerep: incomerep_tbl,
         requirements: requirement_tbl,

@@ -82,5 +82,10 @@ class PageController extends Controller
         $data['css'] = ['global'];
         return view('wheels.terms', $data);
     }
+    public function help()
+    {
+        $data['css'] = ['global'];
+        return view('wheels.help', $data);
+    }
 
 }

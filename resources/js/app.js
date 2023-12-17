@@ -14,7 +14,7 @@ import newsModule from './pages/newsevent.vue';
 import studentEnrollmentModule from './pages/student/enrollment.vue';
 import studentEnrollmentSummaryModule from './pages/student/enrollmentsummary.vue';
 import termsconditionModule from './pages/terms.vue';
-
+import helpModule from './pages/help.vue';
 
 const app = createApp({
     data () {
@@ -52,7 +52,8 @@ const app = createApp({
         'faq': faqModule,
         'aboutus': aboutusModule,
         'contactus': contactusModule,
-        'terms': termsconditionModule
+        'terms': termsconditionModule,
+        'help': helpModule
     },
     methods: {
         arrayFind(array, condition) {

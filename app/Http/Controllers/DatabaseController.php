@@ -153,6 +153,7 @@ class DatabaseController extends Controller
         CompanyDetails::truncate();
         Enrollment::truncate();
         Faq::truncate();
+        Help::truncate();
         Inquiry::truncate();
         Message::truncate();
         DB::table('migrations')->truncate();

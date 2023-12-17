@@ -128,6 +128,16 @@
                 </div>
             </va-navbar-item>
             <va-navbar-item
+            class="self-center"
+            @click="$root.redirectToPage('/help')"
+            :class="{'rounded bg-blue-600 active': $root.isActivePage('/help')}"
+            >
+                <div class="px-3 py-[8px] rounded hover:bg-blue-600">
+                    <va-icon />
+                    <span class="align-middle select-none">Help</span>
+                </div>
+            </va-navbar-item>
+            <va-navbar-item
             v-if="$root.auth && $root.auth.info"
             class="self-center"
             >
