@@ -238,7 +238,7 @@
                     <template v-if="activeSetting === 'LTO Enrolled Students'">
                         <enrstudrep :mode="0" />
                     </template>
-                    <template v-if="activeSetting === 'Failed Enrollments'">
+                    <template v-if="activeSetting === 'Cancelled Enrollments'">
                         <enrstudrep :mode="1" />
                     </template>
                     <template v-if="activeSetting === 'Income'">
@@ -298,7 +298,7 @@ export default {
             dashboard: ['Dashboard'],
             media_mngt: ['News', 'FAQ', 'Company Details'],
             enrol_mngt: ['Schedule', 'Service', 'Requirement', 'Room', 'Vehicle'],
-            reprt_mngt: ['LTO Enrolled Students', 'Failed Enrollments', 'Income'],
+            reprt_mngt: ['LTO Enrolled Students', 'Cancelled Enrollments', 'Income'],
             bckup_mngt: ['User Management','Database Import', 'Database Export', 'Audit Log', ],
             activeSetting: 'Dashboard',
             menu_open: false,
