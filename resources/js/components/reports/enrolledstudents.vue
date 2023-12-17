@@ -87,6 +87,9 @@
                     </td>
                 </tr>
             </template>
+            <template #cell(certificate_status)="{ rowData }">
+                {{ rowData.certificate_status }}
+            </template>
             <template #cell(id)="{ rowData }">
                 <va-button
                 class="mb-2 mr-2 hover:opacity-[0.65!important]"
@@ -143,7 +146,7 @@
                         <va-button
                         icon="save"
 
-                        @click="editService.saved = true, insertUpdateService('save')"
+                        @click="editService.saved = true, insertUpdateService('save'), editService.isEditLoading = true, editService.modal = false"
                         >
                             <p class="font-normal">Save</p>
                         </va-button>
@@ -170,6 +173,7 @@ export default {
                 { key: "transmission", label: "Clutch", sortable: true },
                 { key: "date_start", label: "Attendance", sortable: true },
                 { key: "instructor", label: "Instructor", sortable: true },
+                { key: "certificate_status", label: "Certificate Status", sortable: true },
                 { key: "id", label: "Action", width: 60, sortable: false }
             ],
         };
@@ -190,6 +194,7 @@ export default {
             list: [],
             editService: {
                 modal: false,
+                isEditLoading: false,
                 deleteModal: false,
                 price: {
                     err: 0,
@@ -285,11 +290,12 @@ export default {
                                 this.editService.saved = false
                             )
                         );
-
+                        this.editService.isEditLoading = false;
                         this.getServices();
                     } else this.$root.prompt(response.data.text);
                 }).catch(error => {
-                    // this.$root.prompt(error.response.data.message);
+                    this.$root.prompt(error.response.data.message);
+                    this.editService.isEditLoading = false;
                 });
             } else this.$root.prompt();
         },
